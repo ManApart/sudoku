@@ -1,0 +1,38 @@
+
+:root {
+  --background: #ecebe1;
+  --primary: #afc4af;
+  --highlight: #c4c8db;
+}
+
+body {
+    text-align: center;
+    background-color: var(--background);
+}
+
+button {
+    background-color: var(--primary);
+}
+
+button:hover {
+    background-color: var(--highlight);
+    color: black;
+}
+
+::selection {
+  background-color: var(--highlight);
+}
+
+#banner img {
+    width: 400px;
+}
+
+#links {
+    max-width: 60%;
+    margin: auto;
+}
+
+.link {
+    margin-left: 10%;
+    margin-right: 10%;
+}
