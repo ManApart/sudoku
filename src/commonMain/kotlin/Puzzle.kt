@@ -30,8 +30,7 @@ data class Grid(private val grid: Map<Int, Array<Cell>>) {
     operator fun get(x: Int, y: Int) = grid[y]?.let { it[x].value }
     fun has(value: Int) = grid.any { row -> row.value.any { it.value == value } }
     fun mustHaveInRow(gridRow: Int, value: Int): Boolean {
-        return false
-//        return !has(value) && grid.entries.filter { (row, _) -> row != gridRow }.none { row -> row.value.any { it.isPossible(value) } }
+        return !has(value) && grid.entries.filter { (row, _) -> row != gridRow }.none { row -> row.value.any { it.isPossible(value) } }
     }
 //    fun mustHaveInCol(gridX: Int, gridY: Int, gridCol: Int, value: Int) = puzzleWidth.any { get(col, it) == value }
 }
