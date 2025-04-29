@@ -1,3 +1,4 @@
+import jdk.internal.classfile.impl.Util.has
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -45,5 +46,15 @@ class GridTest {
         assertEquals(1, grid[0,0])
         assertEquals(3, grid[2,0])
         assertEquals(9, grid[2,2])
+    }
+
+    @Test
+    fun gridHas(){
+        val puzzle = Puzzle()
+        puzzle[0, 1] = 5
+        val grid = puzzle.grid(0,0)
+        assertTrue(grid.has(5))
+        assertFalse(grid.has(6))
+        assertFalse(puzzle.grid(1,0).has(5))
     }
 }

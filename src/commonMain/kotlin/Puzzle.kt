@@ -13,7 +13,7 @@ class Puzzle {
     fun rowHas(row: Int, value: Int) = puzzleWidth.any { get(it, row) == value }
     fun colHas(col: Int, value: Int) = puzzleWidth.any { get(col, it) == value }
 
-    fun grid(gridX: Int, gridY: Int) = grids[gridY]?.let { it[gridX] }
+    fun grid(gridX: Int, gridY: Int) = grids[gridY].let { it[gridX] }
 
 }
 
@@ -25,7 +25,7 @@ private fun buildGrid(startX: Int, startY: Int, puzzleCells: Map<Int, Array<Cell
 
 data class Grid(private val grid: Map<Int, Array<Cell>>) {
     operator fun get(x: Int, y: Int) = grid[y]?.let { it[x].value }
-    //    fun has(gridX: Int, gridY: Int, value: Int) = puzzleWidth.any { get(col, it) == value }
+    fun has(value: Int) = grid.any { row -> row.value.any { it.value == value } }
 //    fun mustHaveInRow(gridX: Int, gridY: Int, gridRow: Int, value: Int) = puzzleWidth.any { get(col, it) == value }
 //    fun mustHaveInCol(gridX: Int, gridY: Int, gridCol: Int, value: Int) = puzzleWidth.any { get(col, it) == value }
 }
