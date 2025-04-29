@@ -1,4 +1,3 @@
-import jdk.internal.classfile.impl.Util.has
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -82,10 +81,37 @@ class GridTest {
         puzzle[0, 2] = 4
         puzzle[1, 2] = 5
         puzzle[2, 2] = 6
+
+        puzzle[4, 1] = 8
         puzzle.updatePossible()
 
         val grid = puzzle.grid(0,0)
         assertTrue(grid.mustHaveInRow(1, 7))
         assertFalse(grid.mustHaveInRow(0, 7))
+        assertFalse(grid.mustHaveInRow(1, 6))
+        assertFalse(grid.mustHaveInRow(1, 8))
+    }
+
+    @Test
+    fun gridMustHaveInCol(){
+        val puzzle = Puzzle()
+        puzzle[0, 0] = 1
+        puzzle[2, 0] = 3
+
+        puzzle[0, 1] = 4
+        puzzle[2, 1] = 6
+
+        puzzle[0, 2] = 7
+        puzzle[2, 2] = 9
+
+        puzzle[1, 4] = 2
+
+        puzzle.updatePossible()
+
+        val grid = puzzle.grid(0,0)
+        assertTrue(grid.mustHaveInCol(1, 5))
+        assertFalse(grid.mustHaveInCol(0, 5))
+        assertFalse(grid.mustHaveInCol(1, 3))
+        assertFalse(grid.mustHaveInCol(1, 2))
     }
 }

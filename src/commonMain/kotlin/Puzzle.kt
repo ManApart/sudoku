@@ -1,6 +1,8 @@
 private val puzzleWidth = (0 until 9)
 private val gridWidth = (0 until 3)
 
+//TODO - helpers to get cells in row or cells in column?
+
 class Puzzle {
     private val cells = puzzleWidth.associateWith { y -> puzzleWidth.map { x -> Cell(x, y) }.toTypedArray() }
     private val grids = gridWidth.map { y -> gridWidth.map { x -> buildGrid(x * 3, y * 3, cells) }.toTypedArray() }
@@ -30,9 +32,14 @@ data class Grid(private val grid: Map<Int, Array<Cell>>) {
     operator fun get(x: Int, y: Int) = grid[y]?.let { it[x].value }
     fun has(value: Int) = grid.any { row -> row.value.any { it.value == value } }
     fun mustHaveInRow(gridRow: Int, value: Int): Boolean {
-        return !has(value) && grid.entries.filter { (row, _) -> row != gridRow }.none { row -> row.value.any { it.isPossible(value) } }
+        return !has(value) && grid[gridRow]!!.any { it.isPossible(value) }
+                && grid.entries.filter { (row, _) -> row != gridRow }.none { (_, cells) -> cells.any { it.isPossible(value) } }
     }
-//    fun mustHaveInCol(gridX: Int, gridY: Int, gridCol: Int, value: Int) = puzzleWidth.any { get(col, it) == value }
+
+    fun mustHaveInCol(gridCol: Int, value: Int): Boolean {
+        return !has(value) && grid.values.any { row -> row[gridCol].isPossible(value) }
+                && grid.entries.none { (_, cells) -> cells.filter { it.x != gridCol }.any { it.isPossible(value) } }
+    }
 }
 
 data class Cell(val x: Int, val y: Int, var value: Int? = null) {
