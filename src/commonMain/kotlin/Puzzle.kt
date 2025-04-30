@@ -2,6 +2,7 @@ val puzzleWidth = (0 until 9)
 private val gridWidth = (0 until 3)
 
 //TODO - helpers to get cells in row or cells in column?
+//TODO - check based on only place item can go in a given row
 
 class Puzzle {
     private val cells = puzzleWidth.associateWith { y -> puzzleWidth.map { x -> Cell(x, y) }.toTypedArray() }
@@ -12,17 +13,26 @@ class Puzzle {
         cells[y]?.let { it[x].value = value }
     }
 
+    private fun cells() = cells.values.flatMap { it.toList() }
+
     fun rowHas(row: Int, value: Int) = puzzleWidth.any { get(it, row).value == value }
     fun colHas(col: Int, value: Int) = puzzleWidth.any { get(col, it).value == value }
 
     fun grid(gridX: Int, gridY: Int) = grids[gridY].let { it[gridX] }
 
     fun updatePossible() {
-        cells.values.forEach { row -> row.forEach { it.updatePossible(this) } }
+        cells().forEach { it.updatePossible(this) }
     }
 
     fun takeStep() {
-
+        updatePossible()
+        //TODO - apply inference check based on two in a row
+        val cell = cells().firstOrNull { it.value == null && it.hasOnlyOneOption() }
+        if (cell != null){
+            cell.applyUpdate()
+        } else {
+            println("Could not find step!")
+        }
     }
 }
 
@@ -48,6 +58,7 @@ data class Grid(private val grid: Map<Int, Array<Cell>>) {
 
 data class Cell(val x: Int, val y: Int, var value: Int? = null) {
     private val possibleValues = puzzleWidth.toMutableSet()
+
     fun isPossible(possible: Int) = value == possible || (value == null && possibleValues.contains(possible))
 
     fun updatePossible(puzzle: Puzzle) {
@@ -55,6 +66,14 @@ data class Cell(val x: Int, val y: Int, var value: Int? = null) {
             possibleValues.toList().forEach { possible ->
                 if (puzzle.rowHas(y, possible) || puzzle.colHas(x, possible)) possibleValues.remove(possible)
             }
+        }
+    }
+
+    fun hasOnlyOneOption() = possibleValues.size == 1
+    fun applyUpdate() {
+        if (possibleValues.size == 1) {
+            value = possibleValues.first()
+            println("Setting $x,$y to $value")
         }
     }
 }
