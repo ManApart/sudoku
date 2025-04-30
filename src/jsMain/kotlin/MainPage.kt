@@ -43,7 +43,8 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
     button {
         +"Take Step"
         onClickFunction = {
-
+            puzzle.takeStep()
+            replaceElement("puzzle-wrapper") { puzzle(puzzle) }
         }
     }
 }

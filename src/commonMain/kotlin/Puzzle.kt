@@ -20,6 +20,10 @@ class Puzzle {
     fun updatePossible() {
         cells.values.forEach { row -> row.forEach { it.updatePossible(this) } }
     }
+
+    fun takeStep() {
+
+    }
 }
 
 private fun buildGrid(startX: Int, startY: Int, puzzleCells: Map<Int, Array<Cell>>): Grid {

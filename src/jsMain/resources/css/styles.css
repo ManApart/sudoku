@@ -30,6 +30,7 @@ button:hover {
 #puzzle-wrapper {
     width: fit-content;
     margin: auto;
+    margin-bottom: 20px;
 }
 
 #puzzle {
