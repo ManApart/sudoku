@@ -12,7 +12,7 @@ val jsonMapper = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
 
 fun main() {
     window.onload = {
-        mainPage()
+        replaceElement { mainPage() }
     }
 }
 

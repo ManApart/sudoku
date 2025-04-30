@@ -1,4 +1,4 @@
-private val puzzleWidth = (0 until 9)
+val puzzleWidth = (0 until 9)
 private val gridWidth = (0 until 3)
 
 //TODO - helpers to get cells in row or cells in column?

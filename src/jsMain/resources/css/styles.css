@@ -23,16 +23,35 @@ button:hover {
   background-color: var(--highlight);
 }
 
-#banner img {
-    width: 400px;
+#wrapper {
+    margin-top: 40px;
 }
 
-#links {
-    max-width: 60%;
+#puzzle-wrapper {
+    width: fit-content;
     margin: auto;
 }
 
-.link {
-    margin-left: 10%;
-    margin-right: 10%;
+#puzzle {
+}
+
+table {
+    border-collapse: collapse;
+}
+
+tr, td {
+    border: 1px solid black;
+}
+
+td {
+    width: 40px;
+    height: 40px;
+}
+
+.border-row {
+    border-bottom: 3px solid black;
+}
+
+.border-col {
+    border-right: 3px solid black;
 }
