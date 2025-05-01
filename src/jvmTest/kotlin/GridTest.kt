@@ -3,6 +3,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+/*
+TODO
+col Must Have
+grid Must Have
+apply inference check based on two in a row
+ */
+
+
 class GridTest {
 
     @Test
@@ -161,37 +169,24 @@ class GridTest {
         assertFalse(grid.mustHaveInCol(1, 2))
     }
 
-    /*
-    TODO
-    Row Must Have
-    col Must Have
-    grid Must Have
+    @Test
+    fun rowMustHave() {
+        val puzzle = Puzzle()
+        puzzle[0, 0] = 9
+        puzzle[1, 0] = 2
 
-    Go row by row
-    Get all values needed for row
-    for each value
-    for each empty cell in row, is value possible?
-    if list of possible is 1, enter value
-     */
+        puzzle[3, 0] = 4
+        puzzle[5, 0] = 3
+        puzzle[5, 1] = 1
 
-//    @Test
-//    fun rowMustHave() {
-//        val puzzle = Puzzle()
-//        puzzle[0, 0] = 9
-//        puzzle[1, 0] = 2
-//
-//        puzzle[3, 0] = 4
-//        puzzle[5, 0] = 3
-//        puzzle[5, 1] = 1
-//
-//        puzzle[6, 0] = 5
-//        puzzle[7, 0] = 6
-//
-//        puzzle[2, 3] = 1
-//
-//        puzzle.takeStep()
-//
-//        assertEquals(1, puzzle[8, 0].value)
-//    }
+        puzzle[6, 0] = 5
+        puzzle[7, 0] = 6
+
+        puzzle[2, 3] = 1
+
+        puzzle.takeStep()
+
+        assertEquals(1, puzzle[8, 0].value)
+    }
 
 }

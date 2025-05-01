@@ -1,8 +1,6 @@
 val puzzleWidth = (0 until 9)
 private val gridWidth = (0 until 3)
 
-//TODO - check based on only place item can go in a given row
-
 class Puzzle {
     private val cells = puzzleWidth.associateWith { y -> puzzleWidth.map { x -> Cell(x, y) }.toTypedArray() }
     private val grids = gridWidth.map { y -> gridWidth.map { x -> buildGrid(x * 3, y * 3, cells) }.toTypedArray() }
@@ -28,7 +26,6 @@ class Puzzle {
 
     fun takeStep() {
         updatePossible()
-        //TODO - apply inference check based on two in a row
         val cell = singleOption() ?: mustForRow()
         if (cell != null) {
             cell.applyUpdate()
@@ -47,7 +44,7 @@ class Puzzle {
                 needed.forEach { need ->
                     val possibles = emptyCells.filter { it.isPossible(need) }
                     if (possibles.size == 1) {
-//                        return possibles.first()
+                        return possibles.first().also { it.mustBe(need) }
                     }
                 }
             }
@@ -92,6 +89,11 @@ data class Cell(val x: Int, val y: Int, var value: Int? = null) {
                 if (puzzle.rowHas(y, possible) || puzzle.colHas(x, possible) || puzzle.containingGrid(x, y).has(possible)) possibleValues.remove(possible)
             }
         }
+    }
+
+    fun mustBe(value: Int) {
+        possibleValues.clear()
+        possibleValues.add(value)
     }
 
     fun hasOnlyOneOption() = possibleValues.size == 1
