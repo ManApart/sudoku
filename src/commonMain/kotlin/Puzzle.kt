@@ -20,6 +20,7 @@ class Puzzle {
     fun row(y: Int) = cells[y]!!.toList()
     fun col(x: Int) = cells.values.map { r -> r[x] }
     fun grid(gridX: Int, gridY: Int) = grids[gridY].let { it[gridX] }
+    fun containingGrid(x: Int, y: Int) = grid(x / 3, y / 3)
 
     fun updatePossible() {
         cells().forEach { it.updatePossible(this) }
@@ -28,13 +29,32 @@ class Puzzle {
     fun takeStep() {
         updatePossible()
         //TODO - apply inference check based on two in a row
-        val cell = cells().firstOrNull { it.value == null && it.hasOnlyOneOption() }
-        if (cell != null){
+        val cell = singleOption() ?: mustForRow()
+        if (cell != null) {
             cell.applyUpdate()
         } else {
             println("Could not find step!")
         }
     }
+
+    private fun singleOption() = cells().firstOrNull { it.value == null && it.hasOnlyOneOption() }
+
+    private fun mustForRow(): Cell? {
+        puzzleWidth.map { row(it) }.forEach { row ->
+            val emptyCells = row.filter { it.value == null }
+            if (emptyCells.isNotEmpty()) {
+                val needed = puzzleWidth.map { it + 1 }.toMutableSet().also { n -> n.removeAll(row.mapNotNull { it.value }.toSet()) }
+                needed.forEach { need ->
+                    val possibles = emptyCells.filter { it.isPossible(need) }
+                    if (possibles.size == 1) {
+//                        return possibles.first()
+                    }
+                }
+            }
+        }
+        return null
+    }
+
 }
 
 private fun buildGrid(startX: Int, startY: Int, puzzleCells: Map<Int, Array<Cell>>): Grid {
@@ -69,7 +89,7 @@ data class Cell(val x: Int, val y: Int, var value: Int? = null) {
     fun updatePossible(puzzle: Puzzle) {
         if (value == null && possibleValues.size > 1) {
             possibleValues.toList().forEach { possible ->
-                if (puzzle.rowHas(y, possible) || puzzle.colHas(x, possible)) possibleValues.remove(possible)
+                if (puzzle.rowHas(y, possible) || puzzle.colHas(x, possible) || puzzle.grid(0, 0).has(possible)) possibleValues.remove(possible)
             }
         }
     }

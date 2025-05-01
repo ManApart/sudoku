@@ -84,6 +84,20 @@ class GridTest {
     }
 
     @Test
+    fun getContainingGrid() {
+        val puzzle = Puzzle()
+
+        val grid1 = puzzle.containingGrid(0, 0)
+        assertTrue(grid1.cells().any { it.x == 0 && it.y == 0 })
+
+        val grid2 = puzzle.containingGrid(4, 1)
+        assertTrue(grid2.cells().any { it.x == 3 && it.y == 0 })
+
+        val grid3 = puzzle.containingGrid(8, 8)
+        assertTrue(grid3.cells().any { it.x == 8 && it.y == 8 })
+    }
+
+    @Test
     fun gridHas() {
         val puzzle = Puzzle()
         puzzle[0, 1] = 5
@@ -92,6 +106,16 @@ class GridTest {
         assertFalse(grid.has(6))
         assertFalse(puzzle.grid(1, 0).has(5))
     }
+
+//    @Test
+//    fun isPossibleGrid() {
+//        val puzzle = Puzzle()
+//        puzzle[4, 1] = 5
+//        puzzle.updatePossible()
+//
+//        assertFalse(puzzle[3, 0].isPossible(5))
+//        assertTrue(puzzle[4, 0].isPossible(6))
+//    }
 
     @Test
     fun gridMustHaveInRow() {
