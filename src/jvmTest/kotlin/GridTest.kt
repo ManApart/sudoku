@@ -6,30 +6,52 @@ import kotlin.test.assertTrue
 class GridTest {
 
     @Test
-    fun basicAccess(){
+    fun basicAccess() {
         val puzzle = Puzzle()
         puzzle[0, 0] = 5
         assertEquals(5, puzzle[0, 0].value)
     }
 
     @Test
-    fun rowHas(){
+    fun getRow() {
+        val puzzle = Puzzle()
+        val rowValues = (1..9).reversed()
+
+        rowValues.forEach { puzzle[9 - it, 0] = it }
+
+        val values = puzzle.row(0).map { it.value }
+        assertEquals(rowValues.toList(), values)
+    }
+
+//    @Test
+//    fun getCol() {
+//        val puzzle = Puzzle()
+//        val rowValues = (1..9).reversed()
+//
+//        rowValues.forEach { puzzle[9 - it, 0] = it }
+//
+//        val values = puzzle.col(0).map { it.value }
+//        assertEquals(rowValues.toList(), values)
+//    }
+
+    @Test
+    fun rowHas() {
         val puzzle = Puzzle()
         puzzle[1, 2] = 5
-        assertTrue(puzzle.rowHas(2,5))
-        assertFalse(puzzle.rowHas(1,5))
+        assertTrue(puzzle.rowHas(2, 5))
+        assertFalse(puzzle.rowHas(1, 5))
     }
 
     @Test
-    fun colHas(){
+    fun colHas() {
         val puzzle = Puzzle()
         puzzle[3, 4] = 5
-        assertTrue(puzzle.colHas(3,5))
-        assertFalse(puzzle.colHas(4,5))
+        assertTrue(puzzle.colHas(3, 5))
+        assertFalse(puzzle.colHas(4, 5))
     }
 
     @Test
-    fun getGrid(){
+    fun getGrid() {
         val puzzle = Puzzle()
         puzzle[3, 0] = 1
         puzzle[4, 0] = 2
@@ -41,10 +63,10 @@ class GridTest {
         puzzle[4, 2] = 8
         puzzle[5, 2] = 9
 
-        val grid = puzzle.grid(1,0)
-        assertEquals(1, grid[0,0])
-        assertEquals(3, grid[2,0])
-        assertEquals(9, grid[2,2])
+        val grid = puzzle.grid(1, 0)
+        assertEquals(1, grid[0, 0])
+        assertEquals(3, grid[2, 0])
+        assertEquals(9, grid[2, 2])
     }
 
     @Test
@@ -62,17 +84,17 @@ class GridTest {
     }
 
     @Test
-    fun gridHas(){
+    fun gridHas() {
         val puzzle = Puzzle()
         puzzle[0, 1] = 5
-        val grid = puzzle.grid(0,0)
+        val grid = puzzle.grid(0, 0)
         assertTrue(grid.has(5))
         assertFalse(grid.has(6))
-        assertFalse(puzzle.grid(1,0).has(5))
+        assertFalse(puzzle.grid(1, 0).has(5))
     }
 
     @Test
-    fun gridMustHaveInRow(){
+    fun gridMustHaveInRow() {
         val puzzle = Puzzle()
         puzzle[0, 0] = 1
         puzzle[1, 0] = 2
@@ -85,7 +107,7 @@ class GridTest {
         puzzle[4, 1] = 8
         puzzle.updatePossible()
 
-        val grid = puzzle.grid(0,0)
+        val grid = puzzle.grid(0, 0)
         assertTrue(grid.mustHaveInRow(1, 7))
         assertFalse(grid.mustHaveInRow(0, 7))
         assertFalse(grid.mustHaveInRow(1, 6))
@@ -93,7 +115,7 @@ class GridTest {
     }
 
     @Test
-    fun gridMustHaveInCol(){
+    fun gridMustHaveInCol() {
         val puzzle = Puzzle()
         puzzle[0, 0] = 1
         puzzle[2, 0] = 3
@@ -108,10 +130,44 @@ class GridTest {
 
         puzzle.updatePossible()
 
-        val grid = puzzle.grid(0,0)
+        val grid = puzzle.grid(0, 0)
         assertTrue(grid.mustHaveInCol(1, 5))
         assertFalse(grid.mustHaveInCol(0, 5))
         assertFalse(grid.mustHaveInCol(1, 3))
         assertFalse(grid.mustHaveInCol(1, 2))
     }
+
+    /*
+    TODO
+    Row Must Have
+    col Must Have
+    grid Must Have
+
+    Go row by row
+    Get all values needed for row
+    for each value
+    for each empty cell in row, is value possible?
+    if list of possible is 1, enter value
+     */
+
+//    @Test
+//    fun rowMustHave() {
+//        val puzzle = Puzzle()
+//        puzzle[0, 0] = 9
+//        puzzle[1, 0] = 2
+//
+//        puzzle[3, 0] = 4
+//        puzzle[5, 0] = 3
+//        puzzle[5, 1] = 1
+//
+//        puzzle[6, 0] = 5
+//        puzzle[7, 0] = 6
+//
+//        puzzle[2, 3] = 1
+//
+//        puzzle.takeStep()
+//
+//        assertEquals(1, puzzle[8, 0].value)
+//    }
+
 }

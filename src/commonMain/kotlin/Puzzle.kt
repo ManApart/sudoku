@@ -15,9 +15,12 @@ class Puzzle {
 
     private fun cells() = cells.values.flatMap { it.toList() }
 
+
     fun rowHas(row: Int, value: Int) = puzzleWidth.any { get(it, row).value == value }
     fun colHas(col: Int, value: Int) = puzzleWidth.any { get(col, it).value == value }
 
+    fun row(y: Int) = cells[y]!!.toList()
+    fun col(x: Int) = listOf<Cell>()
     fun grid(gridX: Int, gridY: Int) = grids[gridY].let { it[gridX] }
 
     fun updatePossible() {
@@ -44,7 +47,11 @@ private fun buildGrid(startX: Int, startY: Int, puzzleCells: Map<Int, Array<Cell
 
 data class Grid(private val grid: Map<Int, Array<Cell>>) {
     operator fun get(x: Int, y: Int) = grid[y]?.let { it[x].value }
+
+    fun cells() = grid.values.flatMap { it.toList() }
+
     fun has(value: Int) = grid.any { row -> row.value.any { it.value == value } }
+
     fun mustHaveInRow(gridRow: Int, value: Int): Boolean {
         return !has(value) && grid[gridRow]!!.any { it.isPossible(value) }
                 && grid.entries.filter { (row, _) -> row != gridRow }.none { (_, cells) -> cells.any { it.isPossible(value) } }
@@ -52,7 +59,7 @@ data class Grid(private val grid: Map<Int, Array<Cell>>) {
 
     fun mustHaveInCol(gridCol: Int, value: Int): Boolean {
         return !has(value) && grid.values.any { row -> row[gridCol].isPossible(value) }
-                && grid.entries.none { (_, cells) -> cells.filter { it.x != gridCol }.any { it.isPossible(value) } }
+                && grid.values.none { cells -> cells.filter { it.x != gridCol }.any { it.isPossible(value) } }
     }
 }
 
