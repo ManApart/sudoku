@@ -23,16 +23,16 @@ class GridTest {
         assertEquals(rowValues.toList(), values)
     }
 
-//    @Test
-//    fun getCol() {
-//        val puzzle = Puzzle()
-//        val rowValues = (1..9).reversed()
-//
-//        rowValues.forEach { puzzle[9 - it, 0] = it }
-//
-//        val values = puzzle.col(0).map { it.value }
-//        assertEquals(rowValues.toList(), values)
-//    }
+    @Test
+    fun getCol() {
+        val puzzle = Puzzle()
+        val rowValues = (1..9).reversed()
+
+        rowValues.forEach { puzzle[1, 9 - it] = it }
+
+        val values = puzzle.col(1).map { it.value }
+        assertEquals(rowValues.toList(), values)
+    }
 
     @Test
     fun rowHas() {

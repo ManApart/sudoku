@@ -1,7 +1,6 @@
 val puzzleWidth = (0 until 9)
 private val gridWidth = (0 until 3)
 
-//TODO - helpers to get cells in row or cells in column?
 //TODO - check based on only place item can go in a given row
 
 class Puzzle {
@@ -15,12 +14,11 @@ class Puzzle {
 
     private fun cells() = cells.values.flatMap { it.toList() }
 
-
     fun rowHas(row: Int, value: Int) = puzzleWidth.any { get(it, row).value == value }
     fun colHas(col: Int, value: Int) = puzzleWidth.any { get(col, it).value == value }
 
     fun row(y: Int) = cells[y]!!.toList()
-    fun col(x: Int) = listOf<Cell>()
+    fun col(x: Int) = cells.values.map { r -> r[x] }
     fun grid(gridX: Int, gridY: Int) = grids[gridY].let { it[gridX] }
 
     fun updatePossible() {
