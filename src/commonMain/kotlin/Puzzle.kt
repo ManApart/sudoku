@@ -89,7 +89,7 @@ data class Cell(val x: Int, val y: Int, var value: Int? = null) {
     fun updatePossible(puzzle: Puzzle) {
         if (value == null && possibleValues.size > 1) {
             possibleValues.toList().forEach { possible ->
-                if (puzzle.rowHas(y, possible) || puzzle.colHas(x, possible) || puzzle.grid(0, 0).has(possible)) possibleValues.remove(possible)
+                if (puzzle.rowHas(y, possible) || puzzle.colHas(x, possible) || puzzle.containingGrid(x, y).has(possible)) possibleValues.remove(possible)
             }
         }
     }

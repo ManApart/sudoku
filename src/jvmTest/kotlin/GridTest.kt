@@ -107,15 +107,15 @@ class GridTest {
         assertFalse(puzzle.grid(1, 0).has(5))
     }
 
-//    @Test
-//    fun isPossibleGrid() {
-//        val puzzle = Puzzle()
-//        puzzle[4, 1] = 5
-//        puzzle.updatePossible()
-//
-//        assertFalse(puzzle[3, 0].isPossible(5))
-//        assertTrue(puzzle[4, 0].isPossible(6))
-//    }
+    @Test
+    fun isPossibleGrid() {
+        val puzzle = Puzzle()
+        puzzle[4, 1] = 5
+        puzzle.updatePossible()
+
+        assertFalse(puzzle[3, 0].isPossible(5))
+        assertTrue(puzzle[4, 0].isPossible(6))
+    }
 
     @Test
     fun gridMustHaveInRow() {
