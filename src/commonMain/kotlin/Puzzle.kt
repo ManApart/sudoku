@@ -26,7 +26,7 @@ class Puzzle {
 
     fun takeStep() {
         updatePossible()
-        val cell = singleOption() ?: mustForRow() ?: mustForCol()
+        val cell = singleOption() ?: mustForRow() ?: mustForCol() ?: mustForGrid()
         if (cell != null) {
             cell.applyUpdate()
         } else {
@@ -38,12 +38,13 @@ class Puzzle {
 
     private fun mustForRow() = puzzleWidth.map { row(it) }.mustForCells()
     private fun mustForCol() = puzzleWidth.map { col(it) }.mustForCells()
+    private fun mustForGrid() = gridWidth.flatMap { y -> gridWidth.map { x -> grid(x, y) } }.map { it.cells() }.mustForCells()
 
     private fun List<List<Cell>>.mustForCells(): Cell? {
-        forEach { col ->
-            val emptyCells = col.filter { it.value == null }
+        forEach { group ->
+            val emptyCells = group.filter { it.value == null }
             if (emptyCells.isNotEmpty()) {
-                val needed = puzzleWidth.map { it + 1 }.toMutableSet().also { n -> n.removeAll(col.mapNotNull { it.value }.toSet()) }
+                val needed = puzzleWidth.map { it + 1 }.toMutableSet().also { n -> n.removeAll(group.mapNotNull { it.value }.toSet()) }
                 needed.forEach { need ->
                     val possibles = emptyCells.filter { it.isPossible(need) }
                     if (possibles.size == 1) {
@@ -82,7 +83,7 @@ data class Grid(private val grid: Map<Int, Array<Cell>>) {
 }
 
 data class Cell(val x: Int, val y: Int, var value: Int? = null) {
-    private val possibleValues = puzzleWidth.toMutableSet()
+    private val possibleValues = puzzleWidth.map { it + 1 }.toMutableSet()
 
     fun isPossible(possible: Int) = value == possible || (value == null && possibleValues.contains(possible))
 

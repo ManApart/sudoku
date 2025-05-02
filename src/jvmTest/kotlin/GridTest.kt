@@ -202,27 +202,26 @@ class GridTest {
         puzzle[4, 5] = 5
 
         puzzle.takeStep()
-        assertEquals(5, puzzle[0, 4].value)
+        assertEquals(6, puzzle[0, 5].value)
     }
 
-//    @Test
-//    fun gridMustHave() {
-//        val puzzle = Puzzle()
-//        puzzle[0, 0] = 9
-//        puzzle[1, 0] = 2
-//
-//        puzzle[3, 0] = 4
-//        puzzle[5, 0] = 3
-//        puzzle[5, 1] = 1
-//
-//        puzzle[6, 0] = 5
-//        puzzle[7, 0] = 6
-//
-//        puzzle[2, 3] = 1
-//
-//        puzzle.takeStep()
-//
-//        assertEquals(1, puzzle[8, 0].value)
-//    }
+    @Test
+    fun gridMustHave() {
+        val puzzle = Puzzle()
+        puzzle[0, 0] = 6
+        puzzle[1, 0] = 7
+        puzzle[2, 0] = 2
+
+        puzzle[1, 1] = 3
+        puzzle[2, 1] = 1
+
+        puzzle[1, 2] = 4
+
+        puzzle[4, 1] = 9
+        puzzle[0, 3] = 9
+
+        puzzle.takeStep()
+        assertEquals(9, puzzle[2, 2].value)
+    }
 
 }
