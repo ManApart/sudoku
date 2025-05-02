@@ -69,6 +69,21 @@ class GridTest {
     }
 
     @Test
+    fun needs() {
+        val puzzle = Puzzle()
+        puzzle[0, 0] = 1
+        puzzle[2, 0] = 3
+
+        puzzle[0, 1] = 4
+        puzzle[1, 1] = 5
+
+        puzzle[0, 2] = 8
+        puzzle[1, 2] = 9
+        val grid = puzzle.grid(0, 0)
+        assertEquals(setOf(2,6,7), grid.needs())
+    }
+
+    @Test
     fun isPossibleGrid() {
         val puzzle = Puzzle()
         puzzle[4, 1] = 5
@@ -156,12 +171,12 @@ class GridTest {
 //        puzzle[1, 2] = 8
 //        puzzle[2, 2] = 9
 //
-//        puzzle.takeStep()
+//        puzzle.updatePossible()
 //        assertFalse(puzzle[3, 0].isPossible(2))
 //        assertFalse(puzzle[7, 0].isPossible(2))
 //        assertTrue(puzzle[3, 1].isPossible(2))
 //    }
-//
+
 //    @Test
 //    fun gridNeighborMustHaveCol() {
 //        val puzzle = Puzzle()

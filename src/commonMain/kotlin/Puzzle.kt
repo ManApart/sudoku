@@ -1,4 +1,5 @@
 val puzzleWidth = (0 until 9)
+val puzzleNumbers = puzzleWidth.map { it + 1 }.toSet()
 private val gridWidth = (0 until 3)
 
 class Puzzle {
@@ -11,6 +12,7 @@ class Puzzle {
     }
 
     private fun cells() = cells.values.flatMap { it.toList() }
+    private fun grids() = grids.flatMap { it.toList() }
 
     fun rowHas(row: Int, value: Int) = puzzleWidth.any { get(it, row).value == value }
     fun colHas(col: Int, value: Int) = puzzleWidth.any { get(col, it).value == value }
@@ -20,10 +22,6 @@ class Puzzle {
     fun grid(gridX: Int, gridY: Int) = grids[gridY].let { it[gridX] }
     fun containingGrid(x: Int, y: Int) = grid(x / 3, y / 3)
 
-    fun updatePossible() {
-        cells().forEach { it.updatePossible(this) }
-    }
-
     fun takeStep() {
         updatePossible()
         val cell = singleOption() ?: mustForRow() ?: mustForCol() ?: mustForGrid()
@@ -32,6 +30,11 @@ class Puzzle {
         } else {
             println("Could not find step!")
         }
+    }
+
+    fun updatePossible() {
+        cells().forEach { it.updatePossible(this) }
+        grids().forEach { it.updatePossible(this) }
     }
 
     private fun singleOption() = cells().firstOrNull { it.value == null && it.hasOnlyOneOption() }
@@ -44,7 +47,7 @@ class Puzzle {
         forEach { group ->
             val emptyCells = group.filter { it.value == null }
             if (emptyCells.isNotEmpty()) {
-                val needed = puzzleWidth.map { it + 1 }.toMutableSet().also { n -> n.removeAll(group.mapNotNull { it.value }.toSet()) }
+                val needed = puzzleNumbers - group.mapNotNull { it.value }.toSet()
                 needed.forEach { need ->
                     val possibles = emptyCells.filter { it.isPossible(need) }
                     if (possibles.size == 1) {
@@ -71,6 +74,12 @@ data class Grid(private val grid: Map<Int, Array<Cell>>) {
 
     fun has(value: Int) = grid.any { row -> row.value.any { it.value == value } }
 
+    fun needs() = puzzleNumbers - grid.values.flatMap { row -> row.mapNotNull { it.value } }.toSet()
+
+    fun updatePossible(puzzle: Puzzle) {
+
+    }
+
     fun mustHaveInRow(gridRow: Int, value: Int): Boolean {
         return !has(value) && grid[gridRow]!!.any { it.isPossible(value) }
                 && grid.entries.filter { (row, _) -> row != gridRow }.none { (_, cells) -> cells.any { it.isPossible(value) } }
@@ -83,7 +92,7 @@ data class Grid(private val grid: Map<Int, Array<Cell>>) {
 }
 
 data class Cell(val x: Int, val y: Int, var value: Int? = null) {
-    private val possibleValues = puzzleWidth.map { it + 1 }.toMutableSet()
+    private val possibleValues = puzzleNumbers.toMutableSet()
 
     fun isPossible(possible: Int) = value == possible || (value == null && possibleValues.contains(possible))
 
