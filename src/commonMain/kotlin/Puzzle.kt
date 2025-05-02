@@ -78,19 +78,24 @@ data class Grid(val sourceX: Int, val sourceY: Int, private val grid: Map<Int, A
 
     fun updatePossible(puzzle: Puzzle) {
         val needs = needs()
-        val cells = cells()
+        val gridCells = cells()
         gridWidth.forEach { row ->
             needs.forEach { need ->
                 if (mustHaveInRow(row, need)) {
                     //rest of row should not have this need as possible
-                    puzzle.row(sourceY + row).filter { !cells.contains(it) }.forEach { it.mustNotBe(need) }
+                    puzzle.row(sourceY + row).filter { !gridCells.contains(it) }.forEach { it.mustNotBe(need) }
                 }
             }
         }
 
-//        gridWidth.forEach { col ->
-//
-//        }
+        gridWidth.forEach { col ->
+            needs.forEach { need ->
+                if (mustHaveInCol(col, need)) {
+                    //rest of col should not have this need as possible
+                    puzzle.col(sourceX + col).filter { !gridCells.contains(it) }.forEach { it.mustNotBe(need) }
+                }
+            }
+        }
     }
 
     fun mustHaveInRow(gridRow: Int, value: Int): Boolean {
