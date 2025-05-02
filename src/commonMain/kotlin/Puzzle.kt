@@ -26,7 +26,7 @@ class Puzzle {
 
     fun takeStep() {
         updatePossible()
-        val cell = singleOption() ?: mustForRow()
+        val cell = singleOption() ?: mustForRow() ?: mustForCol()
         if (cell != null) {
             cell.applyUpdate()
         } else {
@@ -36,11 +36,14 @@ class Puzzle {
 
     private fun singleOption() = cells().firstOrNull { it.value == null && it.hasOnlyOneOption() }
 
-    private fun mustForRow(): Cell? {
-        puzzleWidth.map { row(it) }.forEach { row ->
-            val emptyCells = row.filter { it.value == null }
+    private fun mustForRow() = puzzleWidth.map { row(it) }.mustForCells()
+    private fun mustForCol() = puzzleWidth.map { col(it) }.mustForCells()
+
+    private fun List<List<Cell>>.mustForCells(): Cell? {
+        forEach { col ->
+            val emptyCells = col.filter { it.value == null }
             if (emptyCells.isNotEmpty()) {
-                val needed = puzzleWidth.map { it + 1 }.toMutableSet().also { n -> n.removeAll(row.mapNotNull { it.value }.toSet()) }
+                val needed = puzzleWidth.map { it + 1 }.toMutableSet().also { n -> n.removeAll(col.mapNotNull { it.value }.toSet()) }
                 needed.forEach { need ->
                     val possibles = emptyCells.filter { it.isPossible(need) }
                     if (possibles.size == 1) {

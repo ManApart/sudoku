@@ -5,8 +5,6 @@ import kotlin.test.assertTrue
 
 /*
 TODO
-col Must Have
-grid Must Have
 apply inference check based on two in a row
  */
 
@@ -185,8 +183,46 @@ class GridTest {
         puzzle[2, 3] = 1
 
         puzzle.takeStep()
-
         assertEquals(1, puzzle[8, 0].value)
     }
+
+    @Test
+    fun colMustHave() {
+        val puzzle = Puzzle()
+        puzzle[0, 0] = 1
+        puzzle[0, 1] = 2
+        puzzle[0, 2] = 3
+        puzzle[0, 3] = 4
+
+        puzzle[0, 6] = 7
+        puzzle[0, 7] = 8
+        puzzle[0, 8] = 9
+
+
+        puzzle[4, 5] = 5
+
+        puzzle.takeStep()
+        assertEquals(5, puzzle[0, 4].value)
+    }
+
+//    @Test
+//    fun gridMustHave() {
+//        val puzzle = Puzzle()
+//        puzzle[0, 0] = 9
+//        puzzle[1, 0] = 2
+//
+//        puzzle[3, 0] = 4
+//        puzzle[5, 0] = 3
+//        puzzle[5, 1] = 1
+//
+//        puzzle[6, 0] = 5
+//        puzzle[7, 0] = 6
+//
+//        puzzle[2, 3] = 1
+//
+//        puzzle.takeStep()
+//
+//        assertEquals(1, puzzle[8, 0].value)
+//    }
 
 }
