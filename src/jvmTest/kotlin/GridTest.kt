@@ -141,4 +141,46 @@ class GridTest {
         assertEquals(9, puzzle[2, 2].value)
     }
 
+//    @Test
+//    fun gridNeighborMustHaveRow() {
+//        val puzzle = Puzzle()
+//
+//        //Grid with 2 in top row
+//        puzzle[0, 0] = 1
+//
+//        puzzle[0, 1] = 4
+//        puzzle[1, 1] = 5
+//        puzzle[2, 1] = 6
+//
+//        puzzle[0, 2] = 7
+//        puzzle[1, 2] = 8
+//        puzzle[2, 2] = 9
+//
+//        puzzle.takeStep()
+//        assertFalse(puzzle[3, 0].isPossible(2))
+//        assertFalse(puzzle[7, 0].isPossible(2))
+//        assertTrue(puzzle[3, 1].isPossible(2))
+//    }
+//
+//    @Test
+//    fun gridNeighborMustHaveCol() {
+//        val puzzle = Puzzle()
+//
+//        //Grid with 4 in left Col
+//        puzzle[0, 0] = 1
+//        puzzle[1, 0] = 2
+//        puzzle[2, 0] = 3
+//
+//        puzzle[1, 1] = 5
+//        puzzle[2, 1] = 6
+//
+//        puzzle[1, 2] = 8
+//        puzzle[2, 2] = 9
+//
+//        puzzle.takeStep()
+//        assertFalse(puzzle[0, 4].isPossible(4))
+//        assertFalse(puzzle[0, 8].isPossible(4))
+//        assertTrue(puzzle[1, 4].isPossible(4))
+//    }
+
 }
