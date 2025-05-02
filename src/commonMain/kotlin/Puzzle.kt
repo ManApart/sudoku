@@ -62,12 +62,12 @@ class Puzzle {
 }
 
 private fun buildGrid(startX: Int, startY: Int, puzzleCells: Map<Int, Array<Cell>>): Grid {
-    return Grid(gridWidth.associateWith { y ->
+    return Grid(startX, startY, gridWidth.associateWith { y ->
         gridWidth.map { x -> puzzleCells[startY + y]!![startX + x] }.toTypedArray()
     })
 }
 
-data class Grid(private val grid: Map<Int, Array<Cell>>) {
+data class Grid(val sourceX: Int, val sourceY: Int, private val grid: Map<Int, Array<Cell>>) {
     operator fun get(x: Int, y: Int) = grid[y]?.let { it[x].value }
 
     fun cells() = grid.values.flatMap { it.toList() }
@@ -77,7 +77,20 @@ data class Grid(private val grid: Map<Int, Array<Cell>>) {
     fun needs() = puzzleNumbers - grid.values.flatMap { row -> row.mapNotNull { it.value } }.toSet()
 
     fun updatePossible(puzzle: Puzzle) {
+        val needs = needs()
+        val cells = cells()
+        gridWidth.forEach { row ->
+            needs.forEach { need ->
+                if (mustHaveInRow(row, need)) {
+                    //rest of row should not have this need as possible
+                    puzzle.row(sourceY + row).filter { !cells.contains(it) }.forEach { it.mustNotBe(need) }
+                }
+            }
+        }
 
+//        gridWidth.forEach { col ->
+//
+//        }
     }
 
     fun mustHaveInRow(gridRow: Int, value: Int): Boolean {
@@ -102,6 +115,10 @@ data class Cell(val x: Int, val y: Int, var value: Int? = null) {
                 if (puzzle.rowHas(y, possible) || puzzle.colHas(x, possible) || puzzle.containingGrid(x, y).has(possible)) possibleValues.remove(possible)
             }
         }
+    }
+
+    fun mustNotBe(value: Int) {
+        possibleValues.remove(value)
     }
 
     fun mustBe(value: Int) {
