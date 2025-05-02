@@ -1,23 +1,44 @@
+@font-face { font-family: JetBrainsMono; src: url('/assets/JetBrainsMono-Regular.ttf'); }
 
 :root {
-  --background: #ecebe1;
-  --primary: #afc4af;
-  --highlight: #c4c8db;
+  --dark-background: #0c141f;
+  --main-background: #354C66;
+  --light-background: #77A2E0;
+  --highlight: #c9afda;
+  --tan: #f7e7d6;
+  --gray: #727272;
+}
+
+::selection {
+    color: black;
+    background-color: var(--highlight);
 }
 
 body {
-    text-align: center;
-    background-color: var(--background);
+  background-color: var(--main-background);
+  font-family: JetBrainsMono, sans-serif;
+  margin: 0px;
+  color: white;
+  border-right: 1px solid black;
+  text-align: center;
 }
 
 button {
-    background-color: var(--primary);
+  color: black;
+  font-family: JetBrainsMono, sans-serif;
+  background-color: var(--light-background);
+  border: 1px solid var(--main-background);
+
+  margin: 2px;
+  padding: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
 }
 
 button:hover {
-    background-color: var(--highlight);
-    color: black;
+  background-color: var(--highlight);
 }
+
 
 ::selection {
   background-color: var(--highlight);
@@ -31,6 +52,8 @@ button:hover {
     width: fit-content;
     margin: auto;
     margin-bottom: 20px;
+    background-color: var(--tan);
+    color: black;
 }
 
 #puzzle {
