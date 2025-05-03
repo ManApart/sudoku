@@ -4,8 +4,10 @@ import Puzzle
 import STARTER_PUZZLE
 import kotlinx.html.*
 import kotlinx.html.js.button
+import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.HTMLInputElement
 import puzzleWidth
 
 fun TagConsumer<HTMLElement>.mainPage() {
@@ -32,11 +34,22 @@ private fun TagConsumer<HTMLElement>.puzzle(puzzle: Puzzle) {
                 puzzleWidth.forEach { x ->
                     val borderCol = if (x == 2 || x == 5) "border-col" else ""
                     val cell = puzzle[x, y]
-                    td(borderCol) { +(cell.value?.toString() ?: "") }
+                    td(borderCol) {
+                        input {
+                            id = "cell-$x-$y"
+                            onChangeFunction = { cellChanged(x, y) }
+                            value = (cell.value?.toString() ?: "")
+                        }
+                    }
                 }
             }
         }
     }
+}
+
+private fun cellChanged(x: Int, y: Int) {
+    val newValue = el<HTMLInputElement>("cell-$x-$y").value
+    println("Cell $x,$y changed to $newValue")
 }
 
 private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {

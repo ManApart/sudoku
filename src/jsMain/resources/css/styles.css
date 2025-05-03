@@ -44,6 +44,11 @@ button:hover {
   background-color: var(--highlight);
 }
 
+input {
+  all: unset;
+  width: 20px;
+}
+
 #wrapper {
     margin-top: 40px;
 }
