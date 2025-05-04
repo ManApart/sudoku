@@ -19,6 +19,7 @@ fun TagConsumer<HTMLElement>.mainPage() {
             id = "puzzle-wrapper"
             puzzle(puzzle)
         }
+        div { id = "puzzle-messages" }
         div {
             id = "controls"
             controls(puzzle)
@@ -51,11 +52,20 @@ private fun TagConsumer<HTMLElement>.puzzle(puzzle: Puzzle) {
 private fun cellChanged(x: Int, y: Int) {
     val raw = el<HTMLInputElement>("cell-$x-$y").value
     val newValue = raw.toIntOrNull()
+    val messageBox = el("puzzle-messages")
     when {
         raw == "" -> {
-            puzzle.manuallySet(x,y,null)}
-        newValue == null -> {}
-        newValue < 1 || newValue > 9 -> {}
+            puzzle.manuallySet(x, y, null)
+        }
+
+        newValue == null -> {
+            messageBox.textContent = "Unable to parse number"
+        }
+
+        newValue < 1 || newValue > 9 -> {
+            messageBox.textContent = "$newValue out of range"
+        }
+
         else -> {
             println("Cell $x,$y changed to $newValue")
             puzzle.manuallySet(x, y, newValue)
