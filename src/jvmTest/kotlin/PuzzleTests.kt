@@ -3,6 +3,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+//Take another step shouldn't work if no valid step
+//(If I enter something invalid)
 class PuzzleTests {
 
     @Test

@@ -22,6 +22,11 @@ class Puzzle {
     fun grid(gridX: Int, gridY: Int) = grids[gridY].let { it[gridX] }
     fun containingGrid(x: Int, y: Int) = grid(x / 3, y / 3)
 
+    fun manuallySet(x: Int, y: Int, value: Int?) {
+        this[x, y].value = value
+        clearPossible()
+    }
+
     fun takeStep() {
         updatePossible()
         val cell = singleOption() ?: mustForRow() ?: mustForCol() ?: mustForGrid()
@@ -41,7 +46,8 @@ class Puzzle {
 
     private fun mustForRow() = puzzleWidth.map { row(it) }.mustForCells()
     private fun mustForCol() = puzzleWidth.map { col(it) }.mustForCells()
-    private fun mustForGrid() = gridWidth.flatMap { y -> gridWidth.map { x -> grid(x, y) } }.map { it.cells() }.mustForCells()
+    private fun mustForGrid() =
+        gridWidth.flatMap { y -> gridWidth.map { x -> grid(x, y) } }.map { it.cells() }.mustForCells()
 
     private fun List<List<Cell>>.mustForCells(): Cell? {
         forEach { group ->
@@ -59,6 +65,9 @@ class Puzzle {
         return null
     }
 
+    private fun clearPossible() {
+        cells().forEach { it.resetPossible() }
+    }
 }
 
 private fun buildGrid(startX: Int, startY: Int, puzzleCells: Map<Int, Array<Cell>>): Grid {

@@ -10,8 +10,9 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import puzzleWidth
 
+val puzzle = STARTER_PUZZLE
+
 fun TagConsumer<HTMLElement>.mainPage() {
-    val puzzle = STARTER_PUZZLE
     div {
         id = "wrapper"
         div {
@@ -48,10 +49,21 @@ private fun TagConsumer<HTMLElement>.puzzle(puzzle: Puzzle) {
 }
 
 private fun cellChanged(x: Int, y: Int) {
-    val newValue = el<HTMLInputElement>("cell-$x-$y").value
-    println("Cell $x,$y changed to $newValue")
+    val raw = el<HTMLInputElement>("cell-$x-$y").value
+    val newValue = raw.toIntOrNull()
+    when {
+        raw == "" -> {
+            puzzle.manuallySet(x,y,null)}
+        newValue == null -> {}
+        newValue < 1 || newValue > 9 -> {}
+        else -> {
+            println("Cell $x,$y changed to $newValue")
+            puzzle.manuallySet(x, y, newValue)
+        }
+    }
 }
 
+//TODO - allow arrow keys move between boxes
 private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
     button {
         +"Take Step"

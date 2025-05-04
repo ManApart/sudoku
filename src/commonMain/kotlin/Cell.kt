@@ -27,4 +27,11 @@ data class Cell(val x: Int, val y: Int, var value: Int? = null) {
             println("Setting $x,$y to $value")
         }
     }
+
+    fun resetPossible() {
+        if (value == null) {
+            possibleValues.clear()
+            possibleValues.addAll(puzzleNumbers)
+        }
+    }
 }
