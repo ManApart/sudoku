@@ -1,6 +1,6 @@
 val puzzleWidth = (0 until 9)
 val puzzleNumbers = puzzleWidth.map { it + 1 }.toSet()
-private val gridWidth = (0 until 3)
+val gridWidth = (0 until 3)
 
 class Puzzle {
     private val cells = puzzleWidth.associateWith { y -> puzzleWidth.map { x -> Cell(x, y) }.toTypedArray() }
@@ -65,77 +65,4 @@ private fun buildGrid(startX: Int, startY: Int, puzzleCells: Map<Int, Array<Cell
     return Grid(startX, startY, gridWidth.associateWith { y ->
         gridWidth.map { x -> puzzleCells[startY + y]!![startX + x] }.toTypedArray()
     })
-}
-
-data class Grid(val sourceX: Int, val sourceY: Int, private val grid: Map<Int, Array<Cell>>) {
-    operator fun get(x: Int, y: Int) = grid[y]?.let { it[x].value }
-
-    fun cells() = grid.values.flatMap { it.toList() }
-
-    fun has(value: Int) = grid.any { row -> row.value.any { it.value == value } }
-
-    fun needs() = puzzleNumbers - grid.values.flatMap { row -> row.mapNotNull { it.value } }.toSet()
-
-    fun updatePossible(puzzle: Puzzle) {
-        val needs = needs()
-        val gridCells = cells()
-        gridWidth.forEach { row ->
-            needs.forEach { need ->
-                if (mustHaveInRow(row, need)) {
-                    //rest of row should not have this need as possible
-                    puzzle.row(sourceY + row).filter { !gridCells.contains(it) }.forEach { it.mustNotBe(need) }
-                }
-            }
-        }
-
-        gridWidth.forEach { col ->
-            needs.forEach { need ->
-                if (mustHaveInCol(col, need)) {
-                    //rest of col should not have this need as possible
-                    puzzle.col(sourceX + col).filter { !gridCells.contains(it) }.forEach { it.mustNotBe(need) }
-                }
-            }
-        }
-    }
-
-    fun mustHaveInRow(gridRow: Int, value: Int): Boolean {
-        return !has(value) && grid[gridRow]!!.any { it.isPossible(value) }
-                && grid.entries.filter { (row, _) -> row != gridRow }.none { (_, cells) -> cells.any { it.isPossible(value) } }
-    }
-
-    fun mustHaveInCol(gridCol: Int, value: Int): Boolean {
-        return !has(value) && grid.values.any { row -> row[gridCol].isPossible(value) }
-                && grid.values.none { cells -> cells.filter { it.x != gridCol }.any { it.isPossible(value) } }
-    }
-}
-
-data class Cell(val x: Int, val y: Int, var value: Int? = null) {
-    private val possibleValues = puzzleNumbers.toMutableSet()
-
-    fun isPossible(possible: Int) = value == possible || (value == null && possibleValues.contains(possible))
-
-    fun updatePossible(puzzle: Puzzle) {
-        if (value == null && possibleValues.size > 1) {
-            possibleValues.toList().forEach { possible ->
-                if (puzzle.rowHas(y, possible) || puzzle.colHas(x, possible) || puzzle.containingGrid(x, y).has(possible)) possibleValues.remove(possible)
-            }
-        }
-    }
-
-    fun mustNotBe(value: Int) {
-        possibleValues.remove(value)
-    }
-
-    fun mustBe(value: Int) {
-        possibleValues.clear()
-        possibleValues.add(value)
-    }
-
-    fun hasOnlyOneOption() = possibleValues.size == 1
-    fun applyUpdate() {
-        if (possibleValues.size == 1) {
-            value = possibleValues.first()
-            println("Setting $x,$y to $value")
-        }
-    }
 }
