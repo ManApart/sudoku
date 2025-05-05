@@ -8,6 +8,7 @@ import kotlinx.html.div
 import kotlinx.html.js.*
 import kotlinx.html.table
 import kotlinx.html.textArea
+import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import puzzleWidth
@@ -77,43 +78,64 @@ private fun cellChanged(x: Int, y: Int) {
 
 //TODO - allow arrow keys move between boxes
 private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
-    button {
-        +"Clear"
-        onClickFunction = {
-            puzzle.clear()
-            replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+    div {
+        id = "puzzle-pieces"
+        button {
+            id = "previous"
+            +"<"
+            disabled = true
+            onClickFunction = {
+                el<HTMLButtonElement>("next").disabled = false
+            }
+        }
+        button {
+            id = "next"
+            +">"
+            disabled = puzzle.isComplete()
+            onClickFunction = {
+                val isComplete = puzzle.isComplete()
+                if (!isComplete) {
+                    val next = puzzle.takeStep()
+                    if (next == null) {
+                        el("puzzle-messages").textContent = "Unable to find Next Step"
+                    } else {
+                        replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+                        el<HTMLButtonElement>("next").disabled  = puzzle.isComplete()
+                    }
+                }
+            }
         }
     }
 
-    button {
-        +"Export"
-        onClickFunction = {
-            puzzle.export().joinToString("\n") { row ->
-                row.joinToString(",") { "" + (it ?: "") }
-            }.let { println(it) }
-        }
-    }
+    div {
+        id = "import-export"
 
-    textArea { id = "puzzle-import" }
-    button {
-        +"Import"
-        onClickFunction = {
-            val import = el<HTMLInputElement>("puzzle-import")
-            val raw = import.value
-            importPuzzle(raw, puzzle)
-            replaceElement("puzzle-wrapper") { puzzle(puzzle) }
-            import.value = ""
-        }
-    }
-
-    button {
-        +"Solve"
-        onClickFunction = {
-            val next = puzzle.takeStep()
-            if (next == null) {
-                el("puzzle-messages").textContent = "Unable to find Next Step"
-            } else {
+        button {
+            +"Clear"
+            onClickFunction = {
+                puzzle.clear()
                 replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+            }
+        }
+
+        button {
+            +"Export"
+            onClickFunction = {
+                puzzle.export().joinToString("\n") { row ->
+                    row.joinToString(",") { "" + (it ?: "") }
+                }.let { println(it) }
+            }
+        }
+
+        textArea { id = "puzzle-import" }
+        button {
+            +"Import"
+            onClickFunction = {
+                val import = el<HTMLInputElement>("puzzle-import")
+                val raw = import.value
+                importPuzzle(raw, puzzle)
+                replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+                import.value = ""
             }
         }
     }

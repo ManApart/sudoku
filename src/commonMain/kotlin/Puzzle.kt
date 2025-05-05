@@ -69,6 +69,8 @@ class Puzzle {
         cells().forEach { it.reset() }
     }
 
+    fun isComplete() = cells().all { it.value != null }
+
     fun export() = cells.values.map { row -> row.map { it.value } }
 }
 

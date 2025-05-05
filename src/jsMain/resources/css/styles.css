@@ -39,6 +39,10 @@ button:hover {
   background-color: var(--highlight);
 }
 
+button:disabled {
+  background-color: var(--main-background);
+}
+
 
 ::selection {
   background-color: var(--highlight);
@@ -83,4 +87,9 @@ td {
 
 .border-col {
     border-right: 3px solid black;
+}
+
+#puzzle-import {
+    display: block;
+    margin: auto;
 }
