@@ -101,18 +101,14 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
                 if (!isComplete) {
                     if (History.hasNext()) {
                         History.next(puzzle)
-                        replaceElement("puzzle-wrapper") { puzzle(puzzle) }
-                        el<HTMLButtonElement>("next").disabled = puzzle.isComplete()
-                        el<HTMLButtonElement>("previous").disabled = false
+                        displayNext(puzzle)
                     } else {
                         val next = puzzle.takeStep()
                         if (next == null) {
                             el("puzzle-messages").textContent = "Unable to find Next Step"
                         } else {
                             History.add(next)
-                            replaceElement("puzzle-wrapper") { puzzle(puzzle) }
-                            el<HTMLButtonElement>("next").disabled = puzzle.isComplete()
-                            el<HTMLButtonElement>("previous").disabled = false
+                            displayNext(puzzle)
                         }
                     }
                 }
@@ -156,4 +152,10 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
         }
         textArea(classes = "puzzle-import-export") { id = "puzzle-export" }
     }
+}
+
+private fun displayNext(puzzle: Puzzle) {
+    replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+    el<HTMLButtonElement>("next").disabled = puzzle.isComplete()
+    el<HTMLButtonElement>("previous").disabled = false
 }

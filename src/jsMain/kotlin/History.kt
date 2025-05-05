@@ -16,7 +16,6 @@ object History {
         if (historyIndex > -1 && history.size > historyIndex) history = history.subList(0, historyIndex + 1)
         historyIndex++
         history.add(Move(cell.x, cell.y, cell.value))
-        println("History $historyIndex: " + history.joinToString { "(${it.x},${it.y}) ${it.value}" })
     }
 
     fun next(puzzle: Puzzle) {
@@ -34,6 +33,5 @@ object History {
             puzzle.manuallySet(it.x, it.y, null)
         }
         historyIndex--
-        println("History $historyIndex: " + history.joinToString { "(${it.x},${it.y}) ${it.value}" })
     }
 }
