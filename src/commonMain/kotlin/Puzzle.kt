@@ -27,14 +27,10 @@ class Puzzle {
         clearPossible()
     }
 
-    fun takeStep() {
+    fun takeStep(): Cell? {
         updatePossible()
-        val cell = singleOption() ?: mustForRow() ?: mustForCol() ?: mustForGrid()
-        if (cell != null) {
-            cell.applyUpdate()
-        } else {
-            println("Could not find step!")
-        }
+        return (singleOption() ?: mustForRow() ?: mustForCol() ?: mustForGrid())
+            ?.apply { applyUpdate() }
     }
 
     fun updatePossible() {
@@ -68,10 +64,26 @@ class Puzzle {
     private fun clearPossible() {
         cells().forEach { it.resetPossible() }
     }
+
+    fun clear() {
+        cells().forEach { it.reset() }
+    }
+
+    fun export() = cells.values.map { row -> row.map { it.value } }
 }
 
 private fun buildGrid(startX: Int, startY: Int, puzzleCells: Map<Int, Array<Cell>>): Grid {
     return Grid(startX, startY, gridWidth.associateWith { y ->
         gridWidth.map { x -> puzzleCells[startY + y]!![startX + x] }.toTypedArray()
     })
+}
+
+fun importPuzzle(raw: String): Puzzle {
+    val puzzle = Puzzle()
+    raw.split("\n").forEachIndexed { y, row ->
+        row.split(",").forEachIndexed { x, v ->
+            v.toIntOrNull()?.let { puzzle[x, y] = it }
+        }
+    }
+    return puzzle
 }

@@ -91,4 +91,23 @@ class PuzzleTests {
         assertEquals(6, puzzle[0, 5].value)
     }
 
+    @Test
+    fun import() {
+        val raw = """
+    1,,,,,,,,
+    ,,,,,,,,
+    ,,,,,,,,
+    ,,,,2,,,,
+    ,,,,,,,,
+    ,,,,,,,,
+    ,,,,,,,,
+    ,,,,,,,,
+    ,,,,,,,3,
+""".trimIndent()
+        val puzzle = importPuzzle(raw)
+        assertEquals(1, puzzle[0,0].value)
+        assertEquals(2, puzzle[4,3].value)
+        assertEquals(3, puzzle[7,8].value)
+    }
+
 }

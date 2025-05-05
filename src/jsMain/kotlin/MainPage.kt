@@ -76,10 +76,31 @@ private fun cellChanged(x: Int, y: Int) {
 //TODO - allow arrow keys move between boxes
 private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
     button {
-        +"Take Step"
+        +"Clear"
         onClickFunction = {
-            puzzle.takeStep()
+            puzzle.clear()
             replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+        }
+    }
+
+    button {
+        +"Export"
+        onClickFunction = {
+            puzzle.export().joinToString("\n") { row ->
+                row.joinToString(",") { "" + (it ?: "") }
+            }.let { println(it) }
+        }
+    }
+
+    button {
+        +"Solve"
+        onClickFunction = {
+            val next = puzzle.takeStep()
+            if (next == null) {
+                el("puzzle-messages").textContent = "Unable to find Next Step"
+            } else {
+                replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+            }
         }
     }
 }

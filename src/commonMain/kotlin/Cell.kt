@@ -28,6 +28,12 @@ data class Cell(val x: Int, val y: Int, var value: Int? = null) {
         }
     }
 
+    fun reset() {
+        value = null
+        possibleValues.clear()
+        possibleValues.addAll(puzzleNumbers)
+    }
+
     fun resetPossible() {
         if (value == null) {
             possibleValues.clear()
