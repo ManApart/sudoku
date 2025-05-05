@@ -2,10 +2,12 @@ package org.manapart
 
 import Puzzle
 import STARTER_PUZZLE
+import importPuzzle
 import kotlinx.html.*
-import kotlinx.html.js.button
-import kotlinx.html.js.onChangeFunction
-import kotlinx.html.js.onClickFunction
+import kotlinx.html.div
+import kotlinx.html.js.*
+import kotlinx.html.table
+import kotlinx.html.textArea
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import puzzleWidth
@@ -89,6 +91,19 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
             puzzle.export().joinToString("\n") { row ->
                 row.joinToString(",") { "" + (it ?: "") }
             }.let { println(it) }
+        }
+    }
+
+    textArea { id = "puzzle-import" }
+    button {
+        +"Import"
+        onClickFunction = {
+            val import = el<HTMLInputElement>("puzzle-import")
+            val raw = import.value
+            println(raw)
+            importPuzzle(raw, puzzle)
+            replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+            import.value = ""
         }
     }
 

@@ -78,10 +78,10 @@ private fun buildGrid(startX: Int, startY: Int, puzzleCells: Map<Int, Array<Cell
     })
 }
 
-fun importPuzzle(raw: String): Puzzle {
-    val puzzle = Puzzle()
-    raw.split("\n").forEachIndexed { y, row ->
-        row.split(",").forEachIndexed { x, v ->
+fun importPuzzle(raw: String, puzzle: Puzzle = Puzzle()): Puzzle {
+    puzzle.clear()
+    raw.split("\n").filter { it.isNotBlank() }.forEachIndexed { y, row ->
+        row.trim().split(",").forEachIndexed { x, v ->
             v.toIntOrNull()?.let { puzzle[x, y] = it }
         }
     }

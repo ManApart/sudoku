@@ -1,7 +1,4 @@
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 //Take another step shouldn't work if no valid step
 //(If I enter something invalid)
@@ -93,21 +90,36 @@ class PuzzleTests {
 
     @Test
     fun import() {
-        val raw = """
-    1,,,,,,,,
-    ,,,,,,,,
-    ,,,,,,,,
-    ,,,,2,,,,
-    ,,,,,,,,
-    ,,,,,,,,
-    ,,,,,,,,
-    ,,,,,,,,
-    ,,,,,,,3,
-""".trimIndent()
-        val puzzle = importPuzzle(raw)
-        assertEquals(1, puzzle[0,0].value)
-        assertEquals(2, puzzle[4,3].value)
-        assertEquals(3, puzzle[7,8].value)
+        val puzzle = importPuzzle("""
+1,,,,,,,,4
+,,,,,,,,
+,,,,,,,,
+,,,,2,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,3,
+""")
+        assertEquals(1, puzzle[0, 0].value)
+        assertEquals(2, puzzle[4, 3].value)
+        assertEquals(3, puzzle[7, 8].value)
+        assertEquals(4, puzzle[8, 0].value)
     }
 
+    @Test
+    fun noBadSolves() {
+        val puzzle = importPuzzle("""
+        1,2,3,,,,7,8,9
+        ,,6,,,,,3,
+        7,8,9,,,,,1,2
+        ,,,,,,,,
+        ,,,,,,3,,
+        ,,,,,,,,
+        ,,,,,,,,
+        ,,,,,,,,
+        ,,,,,,,,
+""")
+        assertNull(puzzle.takeStep())
+    }
 }
