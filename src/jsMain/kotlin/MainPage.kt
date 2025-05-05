@@ -72,6 +72,7 @@ private fun cellChanged(x: Int, y: Int) {
         else -> {
             println("Cell $x,$y changed to $newValue")
             puzzle.manuallySet(x, y, newValue)
+            History.add(puzzle[x, y])
         }
     }
 }
@@ -83,9 +84,12 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
         button {
             id = "previous"
             +"<"
-            disabled = true
+            disabled = historyIndex < 0
             onClickFunction = {
                 el<HTMLButtonElement>("next").disabled = false
+                History.previous(puzzle)
+                el<HTMLButtonElement>("previous").disabled = historyIndex < 0
+                replaceElement("puzzle-wrapper") { puzzle(puzzle) }
             }
         }
         button {
@@ -95,12 +99,21 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
             onClickFunction = {
                 val isComplete = puzzle.isComplete()
                 if (!isComplete) {
-                    val next = puzzle.takeStep()
-                    if (next == null) {
-                        el("puzzle-messages").textContent = "Unable to find Next Step"
-                    } else {
+                    if (History.hasNext()) {
+                        History.next(puzzle)
                         replaceElement("puzzle-wrapper") { puzzle(puzzle) }
-                        el<HTMLButtonElement>("next").disabled  = puzzle.isComplete()
+                        el<HTMLButtonElement>("next").disabled = puzzle.isComplete()
+                        el<HTMLButtonElement>("previous").disabled = false
+                    } else {
+                        val next = puzzle.takeStep()
+                        if (next == null) {
+                            el("puzzle-messages").textContent = "Unable to find Next Step"
+                        } else {
+                            History.add(next)
+                            replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+                            el<HTMLButtonElement>("next").disabled = puzzle.isComplete()
+                            el<HTMLButtonElement>("previous").disabled = false
+                        }
                     }
                 }
             }
@@ -109,6 +122,18 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
 
     div {
         id = "import-export"
+        textArea(classes = "puzzle-import-export") { id = "puzzle-import" }
+
+        button {
+            +"Import"
+            onClickFunction = {
+                val import = el<HTMLInputElement>("puzzle-import")
+                val raw = import.value
+                importPuzzle(raw, puzzle)
+                replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+                import.value = ""
+            }
+        }
 
         button {
             +"Clear"
@@ -123,20 +148,12 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
             onClickFunction = {
                 puzzle.export().joinToString("\n") { row ->
                     row.joinToString(",") { "" + (it ?: "") }
-                }.let { println(it) }
+                }.let {
+                    el<HTMLInputElement>("puzzle-export").value = it
+                    println(it)
+                }
             }
         }
-
-        textArea { id = "puzzle-import" }
-        button {
-            +"Import"
-            onClickFunction = {
-                val import = el<HTMLInputElement>("puzzle-import")
-                val raw = import.value
-                importPuzzle(raw, puzzle)
-                replaceElement("puzzle-wrapper") { puzzle(puzzle) }
-                import.value = ""
-            }
-        }
+        textArea(classes = "puzzle-import-export") { id = "puzzle-export" }
     }
 }

@@ -89,7 +89,9 @@ td {
     border-right: 3px solid black;
 }
 
-#puzzle-import {
+.puzzle-import-export {
     display: block;
     margin: auto;
+    height: 160px;
+    background-color: var(--main-background);
 }
