@@ -4,7 +4,7 @@ data class Cell(val x: Int, val y: Int, var value: Int? = null) {
     fun isPossible(possible: Int) = value == possible || (value == null && possibleValues.contains(possible))
 
     fun updatePossible(puzzle: Puzzle) {
-        if (value == null && possibleValues.size > 1) {
+        if (value == null && possibleValues.size > 0) {
             possibleValues.toList().forEach { possible ->
                 if (puzzle.rowHas(y, possible) || puzzle.colHas(x, possible) || puzzle.containingGrid(x, y).has(possible)) possibleValues.remove(possible)
             }

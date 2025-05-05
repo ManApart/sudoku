@@ -14,7 +14,9 @@ data class Grid(val sourceX: Int, val sourceY: Int, private val grid: Map<Int, A
             needs.forEach { need ->
                 if (mustHaveInRow(row, need)) {
                     //rest of row should not have this need as possible
-                    puzzle.row(sourceY + row).filter { !gridCells.contains(it) }.forEach { it.mustNotBe(need) }
+                    puzzle.row(sourceY + row).filter { !gridCells.contains(it) }.forEach {
+                        it.mustNotBe(need)
+                    }
                 }
             }
         }

@@ -108,10 +108,10 @@ class PuzzleTests {
     }
 
     @Test
-    fun noBadSolves() {
+    fun noDuplicateNumbers() {
         val puzzle = importPuzzle("""
         1,2,3,,,,7,8,9
-        ,,6,,,,,3,
+        ,,,,,,,3,
         7,8,9,,,,,1,2
         ,,,,,,,,
         ,,,,,,3,,
@@ -120,6 +120,7 @@ class PuzzleTests {
         ,,,,,,,,
         ,,,,,,,,
 """)
-        assertNull(puzzle.takeStep())
+        assertEquals(3,puzzle.takeStep()?.value)
+        assertEquals(4,puzzle.takeStep()?.value)
     }
 }

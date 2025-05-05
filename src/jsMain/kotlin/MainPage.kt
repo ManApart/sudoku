@@ -100,7 +100,6 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
         onClickFunction = {
             val import = el<HTMLInputElement>("puzzle-import")
             val raw = import.value
-            println(raw)
             importPuzzle(raw, puzzle)
             replaceElement("puzzle-wrapper") { puzzle(puzzle) }
             import.value = ""
