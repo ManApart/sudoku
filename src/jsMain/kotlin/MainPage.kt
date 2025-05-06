@@ -15,7 +15,10 @@ import kotlinx.html.textArea
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.events.KeyboardEvent
 import puzzleWidth
+import kotlin.math.max
+import kotlin.math.min
 
 val puzzle = STARTER_PUZZLE
 
@@ -46,8 +49,12 @@ private fun TagConsumer<HTMLElement>.puzzle(puzzle: Puzzle, highlightedCell: Cel
                     td(borderCol) {
                         input {
                             id = "cell-$x-$y"
-                            onChangeFunction = { cellChanged(x, y) }
                             value = (cell.value?.toString() ?: "")
+                            autoComplete = "off"
+                            onKeyUpFunction = { e ->
+                                arrowNavigation(x, y, (e as KeyboardEvent).key)
+                            }
+                            onChangeFunction = { cellChanged(x, y) }
                         }
                     }
                 }
@@ -90,7 +97,6 @@ private fun cellChanged(x: Int, y: Int) {
     }
 }
 
-//TODO - allow arrow keys move between boxes
 private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
     div {
         id = "puzzle-pieces"
@@ -192,4 +198,21 @@ private fun highlightBox(element: String) {
 
 private fun markInvalid(puzzle: Puzzle) {
     puzzle.cells().filter { it.value != null && !puzzle.isValid(it.x, it.y, it.value!!) }.forEach { el("cell-${it.x}-${it.y}").addClass("invalid-cell") }
+}
+
+private fun arrowNavigation(x: Int, y: Int, key: String) {
+    println(key)
+    when (key) {
+        "ArrowUp" -> arrowNavigation(x, y - 1)
+        "ArrowDown" -> arrowNavigation(x, y + 1)
+        "ArrowLeft" -> arrowNavigation(x - 1, y)
+        "ArrowRight" -> arrowNavigation(x + 1, y)
+        else -> {}
+    }
+}
+
+private fun arrowNavigation(x: Int, y: Int) {
+    val newX = min(8, max(0, x))
+    val newY = min(8, max(0, y))
+    el("cell-$newX-$newY").focus()
 }
