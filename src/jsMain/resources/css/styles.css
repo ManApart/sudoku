@@ -100,6 +100,24 @@ td input {
     background-color: var(--highlight);
 }
 
+.active-cell {
+    background-color: var(--light-background);
+}
+
+.hidden {
+    display: none;
+}
+
+#numpad {
+    width: fit-content;
+    margin: auto;
+    padding: 5px;
+}
+
+#numpad td {
+    padding: 20px;
+}
+
 .play-highlight {
     animation: fadeOut 2s linear;
 }

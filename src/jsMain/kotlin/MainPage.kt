@@ -4,6 +4,7 @@ import Cell
 import Puzzle
 import STARTER_PUZZLE
 import generatePuzzle
+import gridWidth
 import importPuzzle
 import kotlinx.browser.window
 import kotlinx.dom.addClass
@@ -21,8 +22,11 @@ import puzzleWidth
 import kotlin.math.max
 import kotlin.math.min
 
+val isMobile = listOf("iPhone", "iPad", "iPod", "Android").any { window.navigator.userAgent.contains(it) }
 
 var puzzle = STARTER_PUZZLE
+var activeCell = puzzle[0, 0]
+
 fun TagConsumer<HTMLElement>.mainPage() {
     div {
         id = "wrapper"
@@ -52,8 +56,16 @@ private fun TagConsumer<HTMLElement>.puzzle(highlightedCell: Cell? = null) {
                             id = "cell-$x-$y"
                             value = (cell.value?.toString() ?: "")
                             autoComplete = "off"
+                            readonly = isMobile
                             onKeyUpFunction = { e ->
                                 arrowNavigation(x, y, (e as KeyboardEvent).key)
+                            }
+                            onClickFunction = {
+                                val inputCell = el<HTMLInputElement>("cell-$x-$y")
+                                inputCell.select()
+                                el("cell-${activeCell.x}-${activeCell.y}").removeClass("active-cell")
+                                activeCell = puzzle[x, y]
+                                inputCell.addClass("active-cell")
                             }
                             onChangeFunction = { cellChanged(x, y) }
                         }
@@ -71,15 +83,18 @@ private fun TagConsumer<HTMLElement>.puzzle(highlightedCell: Cell? = null) {
 
 private fun cellChanged(x: Int, y: Int) {
     val raw = el<HTMLInputElement>("cell-$x-$y").value
-    val newValue = raw.toIntOrNull()
+    if (raw == "") {
+        puzzle.manuallySet(x, y, null)
+        el("cell-$x-$y").removeClass("invalid-cell")
+        highlightBox("cell-$x-$y")
+    } else {
+        cellChanged(x, y, raw.toIntOrNull())
+    }
+}
+
+private fun cellChanged(x: Int, y: Int, newValue: Int?) {
     val messageBox = el("puzzle-messages")
     when {
-        raw == "" -> {
-            puzzle.manuallySet(x, y, null)
-            el("cell-$x-$y").removeClass("invalid-cell")
-            highlightBox("cell-$x-$y")
-        }
-
         newValue == null -> {
             messageBox.textContent = "Unable to parse number"
         }
@@ -90,6 +105,7 @@ private fun cellChanged(x: Int, y: Int) {
 
         else -> {
             println("Cell $x,$y changed to $newValue")
+            el<HTMLInputElement>("cell-$x-$y").value = "" + newValue
             puzzle.manuallySet(x, y, newValue)
             History.add(puzzle[x, y])
             if (puzzle.isValid(x, y, newValue)) highlightBox("cell-$x-$y")
@@ -99,6 +115,34 @@ private fun cellChanged(x: Int, y: Int) {
 }
 
 private fun TagConsumer<HTMLElement>.controls() {
+    historyControls()
+    numpadControls()
+    saveControls()
+}
+
+private fun TagConsumer<HTMLElement>.numpadControls() {
+    if (isMobile) {
+        div {
+            id = "numpad"
+            table {
+                gridWidth.forEach { y ->
+                    tr {
+                        gridWidth.forEach { x ->
+                            td {
+                                +"${y * 3 + x + 1}"
+                                onClickFunction = {
+                                    cellChanged(activeCell.x, activeCell.y, y * 3 + x + 1)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private fun TagConsumer<HTMLElement>.historyControls() {
     div {
         id = "puzzle-pieces"
         button {
@@ -135,7 +179,10 @@ private fun TagConsumer<HTMLElement>.controls() {
             }
         }
     }
+}
 
+
+private fun TagConsumer<HTMLElement>.saveControls() {
     div {
         id = "import-export"
         textArea(classes = "puzzle-import-export") { id = "puzzle-import" }
@@ -188,7 +235,6 @@ private fun displayNext(puzzle: Puzzle, changedCell: Cell?) {
 }
 
 private fun highlightBox(element: String) {
-    println("Higlighting $element")
     with(el(element)) {
         removeClass("play-highlight")
         offsetWidth
@@ -201,7 +247,6 @@ private fun markInvalid(puzzle: Puzzle) {
 }
 
 private fun arrowNavigation(x: Int, y: Int, key: String) {
-    println(key)
     when (key) {
         "ArrowUp" -> arrowNavigation(x, y - 1)
         "ArrowDown" -> arrowNavigation(x, y + 1)
@@ -214,5 +259,9 @@ private fun arrowNavigation(x: Int, y: Int, key: String) {
 private fun arrowNavigation(x: Int, y: Int) {
     val newX = min(8, max(0, x))
     val newY = min(8, max(0, y))
-    el("cell-$newX-$newY").focus()
+    val newCell = el("cell-$newX-$newY")
+    newCell.focus()
+    el("cell-${activeCell.x}-${activeCell.y}").removeClass("active-cell")
+    activeCell = puzzle[x, y]
+    newCell.addClass("active-cell")
 }
