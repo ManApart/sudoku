@@ -76,7 +76,7 @@ tr, td {
     border: 1px solid black;
 }
 
-td {
+td input {
     width: 40px;
     height: 40px;
 }
@@ -94,4 +94,18 @@ td {
     margin: auto;
     height: 160px;
     background-color: var(--main-background);
+}
+
+
+.play-highlight {
+    animation: fadeOut 2s linear;
+}
+
+@keyframes fadeOut {
+  0% {
+    background-color: var(--gray);
+  }
+  100% {
+    background-color: var(--tan);
+  }
 }

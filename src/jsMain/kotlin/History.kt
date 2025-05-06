@@ -18,20 +18,21 @@ object History {
         history.add(Move(cell.x, cell.y, cell.value))
     }
 
-    fun next(puzzle: Puzzle) {
+    fun next(puzzle: Puzzle): Cell? {
         historyIndex++
         println(history.getOrNull(historyIndex))
         if (historyIndex >= history.size) historyIndex = history.size
-        history.getOrNull(historyIndex)?.let {
+        return history.getOrNull(historyIndex)?.let {
             puzzle.manuallySet(it.x, it.y, it.value)
+            puzzle[it.x, it.y]
         }
     }
 
-    fun previous(puzzle: Puzzle) {
+    fun previous(puzzle: Puzzle): Cell? {
         if (historyIndex < 0) historyIndex = 0
-        history.getOrNull(historyIndex)?.let {
+        return history.getOrNull(historyIndex)?.let {
             puzzle.manuallySet(it.x, it.y, null)
-        }
-        historyIndex--
+            puzzle[it.x, it.y]
+        }.also { historyIndex-- }
     }
 }

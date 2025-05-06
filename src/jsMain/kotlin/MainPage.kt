@@ -1,8 +1,12 @@
 package org.manapart
 
+import Cell
 import Puzzle
 import STARTER_PUZZLE
 import importPuzzle
+import kotlinx.browser.window
+import kotlinx.dom.addClass
+import kotlinx.dom.removeClass
 import kotlinx.html.*
 import kotlinx.html.div
 import kotlinx.html.js.*
@@ -30,7 +34,7 @@ fun TagConsumer<HTMLElement>.mainPage() {
     }
 }
 
-private fun TagConsumer<HTMLElement>.puzzle(puzzle: Puzzle) {
+private fun TagConsumer<HTMLElement>.puzzle(puzzle: Puzzle, highlightedCell: Cell? = null) {
     table {
         id = "puzzle"
         puzzleWidth.forEach { y ->
@@ -50,6 +54,10 @@ private fun TagConsumer<HTMLElement>.puzzle(puzzle: Puzzle) {
             }
         }
     }
+    window.setTimeout({
+        highlightedCell?.let { highlightBox("cell-${it.x}-${it.y}") }
+    }, 10)
+
 }
 
 private fun cellChanged(x: Int, y: Int) {
@@ -59,6 +67,7 @@ private fun cellChanged(x: Int, y: Int) {
     when {
         raw == "" -> {
             puzzle.manuallySet(x, y, null)
+            highlightBox("cell-$x-$y")
         }
 
         newValue == null -> {
@@ -73,6 +82,7 @@ private fun cellChanged(x: Int, y: Int) {
             println("Cell $x,$y changed to $newValue")
             puzzle.manuallySet(x, y, newValue)
             History.add(puzzle[x, y])
+            highlightBox("cell-$x-$y")
         }
     }
 }
@@ -87,9 +97,9 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
             disabled = historyIndex < 0
             onClickFunction = {
                 el<HTMLButtonElement>("next").disabled = false
-                History.previous(puzzle)
+                val previous = History.previous(puzzle)
                 el<HTMLButtonElement>("previous").disabled = historyIndex < 0
-                replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+                replaceElement("puzzle-wrapper") { puzzle(puzzle, previous) }
             }
         }
         button {
@@ -100,15 +110,15 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
                 val isComplete = puzzle.isComplete()
                 if (!isComplete) {
                     if (History.hasNext()) {
-                        History.next(puzzle)
-                        displayNext(puzzle)
+                        val next = History.next(puzzle)
+                        displayNext(puzzle, next)
                     } else {
                         val next = puzzle.takeStep()
                         if (next == null) {
                             el("puzzle-messages").textContent = "Unable to find Next Step"
                         } else {
                             History.add(next)
-                            displayNext(puzzle)
+                            displayNext(puzzle, next)
                         }
                     }
                 }
@@ -162,8 +172,17 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
     }
 }
 
-private fun displayNext(puzzle: Puzzle) {
-    replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+private fun displayNext(puzzle: Puzzle, changedCell: Cell?) {
+    replaceElement("puzzle-wrapper") { puzzle(puzzle, changedCell) }
     el<HTMLButtonElement>("next").disabled = puzzle.isComplete()
     el<HTMLButtonElement>("previous").disabled = false
+}
+
+private fun highlightBox(element: String){
+    println("Higlighting $element")
+    with(el(element)) {
+        removeClass("play-highlight")
+        offsetWidth
+        addClass("play-highlight")
+    }
 }
