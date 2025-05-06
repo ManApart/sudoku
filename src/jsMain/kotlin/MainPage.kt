@@ -3,24 +3,21 @@ package org.manapart
 import Cell
 import Puzzle
 import STARTER_PUZZLE
-import generatePuzzle
-import gridWidth
-import importPuzzle
 import kotlinx.browser.window
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.dom.addClass
 import kotlinx.dom.removeClass
 import kotlinx.html.*
-import kotlinx.html.div
-import kotlinx.html.js.*
-import kotlinx.html.table
-import kotlinx.html.textArea
-import org.w3c.dom.HTMLButtonElement
+import kotlinx.html.js.onChangeFunction
+import kotlinx.html.js.onClickFunction
+import kotlinx.html.js.onKeyUpFunction
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.events.KeyboardEvent
 import puzzleWidth
-import kotlin.math.max
-import kotlin.math.min
 
 val isMobile = listOf("iPhone", "iPad", "iPod", "Android").any { window.navigator.userAgent.contains(it) }
 
@@ -32,7 +29,7 @@ fun TagConsumer<HTMLElement>.mainPage() {
         id = "wrapper"
         div {
             id = "puzzle-wrapper"
-            puzzle()
+            puzzle(animate = true)
         }
         div { id = "puzzle-messages" }
         div {
@@ -42,7 +39,7 @@ fun TagConsumer<HTMLElement>.mainPage() {
     }
 }
 
-private fun TagConsumer<HTMLElement>.puzzle(highlightedCell: Cell? = null) {
+fun TagConsumer<HTMLElement>.puzzle(highlightedCell: Cell? = null, animate: Boolean = false) {
     table {
         id = "puzzle"
         puzzleWidth.forEach { y ->
@@ -54,7 +51,7 @@ private fun TagConsumer<HTMLElement>.puzzle(highlightedCell: Cell? = null) {
                     td(borderCol) {
                         input {
                             id = "cell-$x-$y"
-                            value = (cell.value?.toString() ?: "")
+                            value = if (animate) "" else (cell.value?.toString() ?: "")
                             autoComplete = "off"
                             readonly = isMobile
                             onKeyUpFunction = { e ->
@@ -74,11 +71,25 @@ private fun TagConsumer<HTMLElement>.puzzle(highlightedCell: Cell? = null) {
             }
         }
     }
-    window.setTimeout({
-        highlightedCell?.let { highlightBox("cell-${it.x}-${it.y}") }
-        markInvalid(puzzle)
-    }, 10)
+    animate(highlightedCell, animate)
+}
 
+private fun animate(highlightedCell: Cell?, animate: Boolean) {
+    CoroutineScope(GlobalScope.coroutineContext).launch {
+        delay(10)
+        highlightedCell?.let { highlightBox("cell-${it.x}-${it.y}") }
+        if (animate) {
+            puzzle.cells().filter { it.value != null }.forEachIndexed { i, cell ->
+                launch {
+                    delay(100L * i)
+                    highlightBox("cell-${cell.x}-${cell.y}")
+                    delay(100L)
+                    el<HTMLInputElement>("cell-${cell.x}-${cell.y}").value = "" + cell.value
+                }
+            }
+        }
+        markInvalid(puzzle)
+    }
 }
 
 private fun cellChanged(x: Int, y: Int) {
@@ -92,7 +103,7 @@ private fun cellChanged(x: Int, y: Int) {
     }
 }
 
-private fun cellChanged(x: Int, y: Int, newValue: Int?) {
+fun cellChanged(x: Int, y: Int, newValue: Int?) {
     val messageBox = el("puzzle-messages")
     when {
         newValue == null -> {
@@ -114,126 +125,6 @@ private fun cellChanged(x: Int, y: Int, newValue: Int?) {
     }
 }
 
-private fun TagConsumer<HTMLElement>.controls() {
-    historyControls()
-    numpadControls()
-    saveControls()
-}
-
-private fun TagConsumer<HTMLElement>.numpadControls() {
-    if (isMobile) {
-        div {
-            id = "numpad"
-            table {
-                gridWidth.forEach { y ->
-                    tr {
-                        gridWidth.forEach { x ->
-                            td {
-                                +"${y * 3 + x + 1}"
-                                onClickFunction = {
-                                    cellChanged(activeCell.x, activeCell.y, y * 3 + x + 1)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-private fun TagConsumer<HTMLElement>.historyControls() {
-    div {
-        id = "puzzle-pieces"
-        button {
-            id = "previous"
-            +"<"
-            disabled = historyIndex < 0
-            onClickFunction = {
-                el<HTMLButtonElement>("next").disabled = false
-                val previous = History.previous(puzzle)
-                el<HTMLButtonElement>("previous").disabled = historyIndex < 0
-                replaceElement("puzzle-wrapper") { puzzle(previous) }
-            }
-        }
-        button {
-            id = "next"
-            +">"
-            disabled = puzzle.isComplete()
-            onClickFunction = {
-                val isComplete = puzzle.isComplete()
-                if (!isComplete) {
-                    if (History.hasNext()) {
-                        val next = History.next(puzzle)
-                        displayNext(puzzle, next)
-                    } else {
-                        val next = puzzle.takeStep()
-                        if (next == null) {
-                            el("puzzle-messages").textContent = "Unable to find Next Step"
-                        } else {
-                            History.add(next)
-                            displayNext(puzzle, next)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-private fun TagConsumer<HTMLElement>.saveControls() {
-    div {
-        id = "import-export"
-        textArea(classes = "puzzle-import-export") { id = "puzzle-import" }
-
-        button {
-            +"Import"
-            onClickFunction = {
-                val import = el<HTMLInputElement>("puzzle-import")
-                val raw = import.value
-                puzzle = importPuzzle(raw)
-                replaceElement("puzzle-wrapper") { puzzle() }
-                import.value = ""
-            }
-        }
-
-        button {
-            +"Clear"
-            onClickFunction = {
-                puzzle.clear()
-                replaceElement("puzzle-wrapper") { puzzle() }
-            }
-        }
-
-        button {
-            +"Generate"
-            onClickFunction = {
-                puzzle = generatePuzzle()
-                replaceElement("puzzle-wrapper") { puzzle() }
-            }
-        }
-
-        button {
-            +"Export"
-            onClickFunction = {
-                puzzle.export().joinToString("\n") { row ->
-                    row.joinToString(",") { "" + (it ?: "") }
-                }.let {
-                    el<HTMLInputElement>("puzzle-import").value = it
-                    println(it)
-                }
-            }
-        }
-    }
-}
-
-private fun displayNext(puzzle: Puzzle, changedCell: Cell?) {
-    replaceElement("puzzle-wrapper") { puzzle(changedCell) }
-    el<HTMLButtonElement>("next").disabled = puzzle.isComplete()
-    el<HTMLButtonElement>("previous").disabled = false
-}
-
 private fun highlightBox(element: String) {
     with(el(element)) {
         removeClass("play-highlight")
@@ -244,24 +135,4 @@ private fun highlightBox(element: String) {
 
 private fun markInvalid(puzzle: Puzzle) {
     puzzle.cells().filter { it.value != null && !puzzle.isValid(it.x, it.y, it.value!!) }.forEach { el("cell-${it.x}-${it.y}").addClass("invalid-cell") }
-}
-
-private fun arrowNavigation(x: Int, y: Int, key: String) {
-    when (key) {
-        "ArrowUp" -> arrowNavigation(x, y - 1)
-        "ArrowDown" -> arrowNavigation(x, y + 1)
-        "ArrowLeft" -> arrowNavigation(x - 1, y)
-        "ArrowRight" -> arrowNavigation(x + 1, y)
-        else -> {}
-    }
-}
-
-private fun arrowNavigation(x: Int, y: Int) {
-    val newX = min(8, max(0, x))
-    val newY = min(8, max(0, y))
-    val newCell = el("cell-$newX-$newY")
-    newCell.focus()
-    el("cell-${activeCell.x}-${activeCell.y}").removeClass("active-cell")
-    activeCell = puzzle[x, y]
-    newCell.addClass("active-cell")
 }

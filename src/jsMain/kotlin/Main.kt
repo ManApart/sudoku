@@ -8,8 +8,6 @@ import kotlinx.html.TagConsumer
 import kotlinx.html.dom.append
 import org.w3c.dom.HTMLElement
 
-val jsonMapper = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
-
 fun main() {
     window.onload = {
         replaceElement { mainPage() }
