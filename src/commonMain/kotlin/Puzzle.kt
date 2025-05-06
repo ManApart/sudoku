@@ -61,6 +61,10 @@ class Puzzle {
         return null
     }
 
+    fun isValid(x: Int, y: Int, possible: Int): Boolean {
+        return !rowHas(y, possible) && !colHas(x, possible) && !containingGrid(x,y).has(possible)
+    }
+
     private fun clearPossible() {
         cells().forEach { it.resetPossible() }
     }

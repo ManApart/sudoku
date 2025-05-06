@@ -90,7 +90,8 @@ class PuzzleTests {
 
     @Test
     fun import() {
-        val puzzle = importPuzzle("""
+        val puzzle = importPuzzle(
+            """
 1,,,,,,,,4
 ,,,,,,,,
 ,,,,,,,,
@@ -100,7 +101,8 @@ class PuzzleTests {
 ,,,,,,,,
 ,,,,,,,,
 ,,,,,,,3,
-""")
+"""
+        )
         assertEquals(1, puzzle[0, 0].value)
         assertEquals(2, puzzle[4, 3].value)
         assertEquals(3, puzzle[7, 8].value)
@@ -108,19 +110,49 @@ class PuzzleTests {
     }
 
     @Test
+    fun importIgnoresEmptyTrailingLines() {
+        val puzzle = importPuzzle(
+            """
+1,,,,,,,,4
+,,,,,,,,
+,,,,,,,,
+,,,,2,,,,
+"""
+        )
+        assertEquals(1, puzzle[0, 0].value)
+        assertEquals(2, puzzle[4, 3].value)
+        assertEquals(4, puzzle[8, 0].value)
+    }
+
+    @Test
     fun noDuplicateNumbers() {
-        val puzzle = importPuzzle("""
+        val puzzle = importPuzzle(
+            """
         1,2,3,,,,7,8,9
         ,,,,,,,3,
         7,8,9,,,,,1,2
         ,,,,,,,,
         ,,,,,,3,,
+"""
+        )
+        assertEquals(3, puzzle.takeStep()?.value)
+        assertEquals(4, puzzle.takeStep()?.value)
+    }
+
+    @Test
+    fun isValid() {
+        val puzzle = importPuzzle(
+            """
+        1,2,3,,,,,,
+        4,5,6,,,,,,
         ,,,,,,,,
         ,,,,,,,,
-        ,,,,,,,,
-        ,,,,,,,,
-""")
-        assertEquals(3,puzzle.takeStep()?.value)
-        assertEquals(4,puzzle.takeStep()?.value)
+        ,,,,6,,,,
+"""
+        )
+        assertTrue(puzzle.isValid(3, 0, 6))
+        assertFalse(puzzle.isValid(0, 2, 6))
+        assertFalse(puzzle.isValid(4, 0, 6))
+        assertFalse(puzzle.isValid(3, 1, 6))
     }
 }
