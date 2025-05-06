@@ -3,6 +3,7 @@ package org.manapart
 import Cell
 import Puzzle
 import STARTER_PUZZLE
+import generatePuzzle
 import importPuzzle
 import kotlinx.browser.window
 import kotlinx.dom.addClass
@@ -20,24 +21,24 @@ import puzzleWidth
 import kotlin.math.max
 import kotlin.math.min
 
-val puzzle = STARTER_PUZZLE
 
+var puzzle = STARTER_PUZZLE
 fun TagConsumer<HTMLElement>.mainPage() {
     div {
         id = "wrapper"
         div {
             id = "puzzle-wrapper"
-            puzzle(puzzle)
+            puzzle()
         }
         div { id = "puzzle-messages" }
         div {
             id = "controls"
-            controls(puzzle)
+            controls()
         }
     }
 }
 
-private fun TagConsumer<HTMLElement>.puzzle(puzzle: Puzzle, highlightedCell: Cell? = null) {
+private fun TagConsumer<HTMLElement>.puzzle(highlightedCell: Cell? = null) {
     table {
         id = "puzzle"
         puzzleWidth.forEach { y ->
@@ -97,7 +98,7 @@ private fun cellChanged(x: Int, y: Int) {
     }
 }
 
-private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
+private fun TagConsumer<HTMLElement>.controls() {
     div {
         id = "puzzle-pieces"
         button {
@@ -108,7 +109,7 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
                 el<HTMLButtonElement>("next").disabled = false
                 val previous = History.previous(puzzle)
                 el<HTMLButtonElement>("previous").disabled = historyIndex < 0
-                replaceElement("puzzle-wrapper") { puzzle(puzzle, previous) }
+                replaceElement("puzzle-wrapper") { puzzle(previous) }
             }
         }
         button {
@@ -144,8 +145,8 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
             onClickFunction = {
                 val import = el<HTMLInputElement>("puzzle-import")
                 val raw = import.value
-                importPuzzle(raw, puzzle)
-                replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+                puzzle = importPuzzle(raw)
+                replaceElement("puzzle-wrapper") { puzzle() }
                 import.value = ""
             }
         }
@@ -154,17 +155,17 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
             +"Clear"
             onClickFunction = {
                 puzzle.clear()
-                replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+                replaceElement("puzzle-wrapper") { puzzle() }
             }
         }
 
-//        button {
-//            +"Generate"
-//            onClickFunction = {
-//                puzzle.generate()
-//                replaceElement("puzzle-wrapper") { puzzle(puzzle) }
-//            }
-//        }
+        button {
+            +"Generate"
+            onClickFunction = {
+                puzzle = generatePuzzle()
+                replaceElement("puzzle-wrapper") { puzzle() }
+            }
+        }
 
         button {
             +"Export"
@@ -172,17 +173,16 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
                 puzzle.export().joinToString("\n") { row ->
                     row.joinToString(",") { "" + (it ?: "") }
                 }.let {
-                    el<HTMLInputElement>("puzzle-export").value = it
+                    el<HTMLInputElement>("puzzle-import").value = it
                     println(it)
                 }
             }
         }
-        textArea(classes = "puzzle-import-export") { id = "puzzle-export" }
     }
 }
 
 private fun displayNext(puzzle: Puzzle, changedCell: Cell?) {
-    replaceElement("puzzle-wrapper") { puzzle(puzzle, changedCell) }
+    replaceElement("puzzle-wrapper") { puzzle(changedCell) }
     el<HTMLButtonElement>("next").disabled = puzzle.isComplete()
     el<HTMLButtonElement>("previous").disabled = false
 }

@@ -69,7 +69,7 @@ class Puzzle {
     }
 
     fun isValid(x: Int, y: Int, possible: Int): Boolean {
-        val ignoring = this[x,y].let { if (it.value == possible) it else null }
+        val ignoring = this[x, y].let { if (it.value == possible) it else null }
         return !rowHas(y, possible, ignoring) && !colHas(x, possible, ignoring) && !containingGrid(x, y).has(possible, ignoring)
     }
 
@@ -84,23 +84,6 @@ class Puzzle {
     fun isComplete() = cells().all { it.value != null }
 
     fun export() = cells.values.map { row -> row.map { it.value } }
-
-    fun generate() {
-        clear()
-
-        grid(0, 0).generate(this)
-        grid(2, 2).generate(this)
-        grid(2, 0).generate(this)
-        grid(0, 2).generate(this)
-        grid(1, 1).generate(this)
-
-        var next = takeStep()
-        while (next != null) {
-            next = takeStep()
-        }
-        if (!isComplete()) println("Failed to generate puzzle!")
-
-    }
 }
 
 private fun buildGrid(startX: Int, startY: Int, puzzleCells: Map<Int, Array<Cell>>): Grid {
@@ -109,12 +92,31 @@ private fun buildGrid(startX: Int, startY: Int, puzzleCells: Map<Int, Array<Cell
     })
 }
 
-fun importPuzzle(raw: String, puzzle: Puzzle = Puzzle()): Puzzle {
-    puzzle.clear()
+fun importPuzzle(raw: String): Puzzle {
+    val puzzle = Puzzle()
     raw.split("\n").filter { it.isNotBlank() }.forEachIndexed { y, row ->
         row.trim().split(",").forEachIndexed { x, v ->
             v.toIntOrNull()?.let { puzzle[x, y] = it }
         }
     }
+    return puzzle
+}
+
+
+fun generatePuzzle(): Puzzle {
+    val puzzle = importPuzzle(COMPLETE_PUZZLE_TEXT)
+
+
+//        grid(0, 0).generate(this)
+//        grid(2, 2).generate(this)
+//        grid(2, 0).generate(this)
+//        grid(0, 2).generate(this)
+//        grid(1, 1).generate(this)
+
+//        var next = takeStep()
+//        while (next != null) {
+//            next = takeStep()
+//        }
+//        if (!isComplete()) println("Failed to generate puzzle!")
     return puzzle
 }
