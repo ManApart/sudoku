@@ -155,5 +155,7 @@ class PuzzleTests {
         assertFalse(puzzle.isValid(0, 2, 6))
         assertFalse(puzzle.isValid(4, 0, 6))
         assertFalse(puzzle.isValid(3, 1, 6))
+        assertFalse(puzzle.isValid(8, 8, 0))
+        assertFalse(puzzle.isValid(8, 8, 10))
     }
 }

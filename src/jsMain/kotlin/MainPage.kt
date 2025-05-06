@@ -133,6 +133,6 @@ private fun highlightBox(element: String) {
     }
 }
 
-private fun markInvalid(puzzle: Puzzle) {
+fun markInvalid(puzzle: Puzzle) {
     puzzle.cells().filter { it.value != null && !puzzle.isValid(it.x, it.y, it.value!!) }.forEach { el("cell-${it.x}-${it.y}").addClass("invalid-cell") }
 }

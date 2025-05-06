@@ -12,8 +12,10 @@ import kotlinx.html.js.onClickFunction
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
+import kotlin.js.Date
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.random.Random
 
 
 fun TagConsumer<HTMLElement>.controls() {
@@ -111,8 +113,8 @@ private fun TagConsumer<HTMLElement>.saveControls() {
         button {
             +"Generate"
             onClickFunction = {
-                puzzle = generatePuzzle()
-                replaceElement("puzzle-wrapper") { puzzle(animate = true) }
+                puzzle = generatePuzzle(Random(Date().getMilliseconds()))
+                replaceElement("puzzle-wrapper") { puzzle(animate = false) }
             }
         }
 

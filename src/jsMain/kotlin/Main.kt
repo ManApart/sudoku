@@ -7,6 +7,7 @@ import kotlinx.dom.createElement
 import kotlinx.html.TagConsumer
 import kotlinx.html.dom.append
 import org.w3c.dom.HTMLElement
+import kotlin.random.Random
 
 fun main() {
     window.onload = {
