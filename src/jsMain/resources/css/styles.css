@@ -96,6 +96,9 @@ td input {
     background-color: var(--main-background);
 }
 
+.invalid-cell {
+    background-color: var(--highlight);
+}
 
 .play-highlight {
     animation: fadeOut 2s linear;

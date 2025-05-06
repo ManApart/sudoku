@@ -3,7 +3,7 @@ data class Grid(val sourceX: Int, val sourceY: Int, private val grid: Map<Int, A
 
     fun cells() = grid.values.flatMap { it.toList() }
 
-    fun has(value: Int) = grid.any { row -> row.value.any { it.value == value } }
+    fun has(value: Int, ignoring: Cell? = null) = grid.any { row -> row.value.any { it != ignoring && it.value == value } }
 
     fun needs() = puzzleNumbers - grid.values.flatMap { row -> row.mapNotNull { it.value } }.toSet()
 

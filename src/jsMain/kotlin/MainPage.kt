@@ -56,6 +56,7 @@ private fun TagConsumer<HTMLElement>.puzzle(puzzle: Puzzle, highlightedCell: Cel
     }
     window.setTimeout({
         highlightedCell?.let { highlightBox("cell-${it.x}-${it.y}") }
+        markInvalid(puzzle)
     }, 10)
 
 }
@@ -67,6 +68,7 @@ private fun cellChanged(x: Int, y: Int) {
     when {
         raw == "" -> {
             puzzle.manuallySet(x, y, null)
+            el("cell-$x-$y").removeClass("invalid-cell")
             highlightBox("cell-$x-$y")
         }
 
@@ -82,7 +84,8 @@ private fun cellChanged(x: Int, y: Int) {
             println("Cell $x,$y changed to $newValue")
             puzzle.manuallySet(x, y, newValue)
             History.add(puzzle[x, y])
-            highlightBox("cell-$x-$y")
+            if (puzzle.isValid(x, y, newValue)) highlightBox("cell-$x-$y")
+            markInvalid(puzzle)
         }
     }
 }
@@ -178,11 +181,15 @@ private fun displayNext(puzzle: Puzzle, changedCell: Cell?) {
     el<HTMLButtonElement>("previous").disabled = false
 }
 
-private fun highlightBox(element: String){
+private fun highlightBox(element: String) {
     println("Higlighting $element")
     with(el(element)) {
         removeClass("play-highlight")
         offsetWidth
         addClass("play-highlight")
     }
+}
+
+private fun markInvalid(puzzle: Puzzle) {
+    puzzle.cells().filter { it.value != null && !puzzle.isValid(it.x, it.y, it.value!!) }.forEach { el("cell-${it.x}-${it.y}").addClass("invalid-cell") }
 }

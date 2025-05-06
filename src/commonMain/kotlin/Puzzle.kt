@@ -11,11 +11,18 @@ class Puzzle {
         cells[y]?.let { it[x].value = value }
     }
 
-    private fun cells() = cells.values.flatMap { it.toList() }
+    fun cells() = cells.values.flatMap { it.toList() }
     private fun grids() = grids.flatMap { it.toList() }
 
-    fun rowHas(row: Int, value: Int) = puzzleWidth.any { get(it, row).value == value }
-    fun colHas(col: Int, value: Int) = puzzleWidth.any { get(col, it).value == value }
+    fun rowHas(row: Int, value: Int, ignoring: Cell? = null) = puzzleWidth.any {
+        val cell = get(it, row)
+        cell != ignoring && cell.value == value
+    }
+
+    fun colHas(col: Int, value: Int, ignoring: Cell? = null) = puzzleWidth.any {
+        val cell = get(col, it)
+        cell != ignoring && cell.value == value
+    }
 
     fun row(y: Int) = cells[y]!!.toList()
     fun col(x: Int) = cells.values.map { r -> r[x] }
@@ -62,7 +69,8 @@ class Puzzle {
     }
 
     fun isValid(x: Int, y: Int, possible: Int): Boolean {
-        return !rowHas(y, possible) && !colHas(x, possible) && !containingGrid(x,y).has(possible)
+        val ignoring = this[x,y].let { if (it.value == possible) it else null }
+        return !rowHas(y, possible, ignoring) && !colHas(x, possible, ignoring) && !containingGrid(x, y).has(possible, ignoring)
     }
 
     private fun clearPossible() {
