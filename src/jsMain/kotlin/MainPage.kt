@@ -139,6 +139,14 @@ private fun TagConsumer<HTMLElement>.controls(puzzle: Puzzle) {
             }
         }
 
+//        button {
+//            +"Generate"
+//            onClickFunction = {
+//                puzzle.generate()
+//                replaceElement("puzzle-wrapper") { puzzle(puzzle) }
+//            }
+//        }
+
         button {
             +"Export"
             onClickFunction = {

@@ -40,4 +40,17 @@ data class Grid(val sourceX: Int, val sourceY: Int, private val grid: Map<Int, A
         return !has(value) && grid.values.any { row -> row[gridCol].isPossible(value) }
                 && grid.values.none { cells -> cells.filter { it.x != gridCol }.any { it.isPossible(value) } }
     }
+
+    fun generate(puzzle: Puzzle, attempt: Int = 0) {
+        val numbers = puzzleNumbers.shuffled().toMutableSet()
+        cells().forEach { cell ->
+            val v = numbers.firstOrNull { puzzle.isValid(cell.x, cell.y, it) }
+            numbers.remove(v)
+            cell.value = v
+        }
+
+        if (!isComplete() && attempt < 3) generate(puzzle, attempt + 1)
+    }
+
+    private fun isComplete() = cells().all { it.value != null }
 }

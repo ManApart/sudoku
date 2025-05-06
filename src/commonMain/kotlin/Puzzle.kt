@@ -76,6 +76,23 @@ class Puzzle {
     fun isComplete() = cells().all { it.value != null }
 
     fun export() = cells.values.map { row -> row.map { it.value } }
+
+    fun generate() {
+        clear()
+
+        grid(0, 0).generate(this)
+        grid(2, 2).generate(this)
+        grid(2, 0).generate(this)
+        grid(0, 2).generate(this)
+        grid(1, 1).generate(this)
+
+        var next = takeStep()
+        while (next != null) {
+            next = takeStep()
+        }
+        if (!isComplete()) println("Failed to generate puzzle!")
+
+    }
 }
 
 private fun buildGrid(startX: Int, startY: Int, puzzleCells: Map<Int, Array<Cell>>): Grid {
