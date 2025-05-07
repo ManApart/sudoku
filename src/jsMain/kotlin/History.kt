@@ -3,12 +3,12 @@ package org.manapart
 import Cell
 import Puzzle
 
-var historyIndex = -1
-var history = mutableListOf<Move>()
 
 data class Move(val x: Int, val y: Int, val value: Int?)
 
 object History {
+    var historyIndex = -1
+    private var history = mutableListOf<Move>()
 
     fun hasNext() = historyIndex < history.size - 1
 
@@ -35,4 +35,6 @@ object History {
             puzzle[it.x, it.y]
         }.also { historyIndex-- }
     }
+
+    fun clear() = history.clear()
 }

@@ -10,6 +10,7 @@ import kotlinx.dom.removeClass
 import kotlinx.html.*
 import kotlinx.html.js.onClickFunction
 import minimalSolvable
+import org.manapart.History.historyIndex
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
@@ -100,6 +101,7 @@ private fun TagConsumer<HTMLElement>.saveControls() {
                 puzzle = importPuzzle(raw)
                 replaceElement("puzzle-wrapper") { puzzle(animate = true) }
                 import.value = ""
+                clearHistory()
             }
         }
 
@@ -108,6 +110,7 @@ private fun TagConsumer<HTMLElement>.saveControls() {
             onClickFunction = {
                 puzzle.clear()
                 replaceElement("puzzle-wrapper") { puzzle() }
+                clearHistory()
             }
         }
 
@@ -116,6 +119,7 @@ private fun TagConsumer<HTMLElement>.saveControls() {
             onClickFunction = {
                 puzzle = generatePuzzle(Random(Date().getMilliseconds())).apply { minimalSolvable() }
                 replaceElement("puzzle-wrapper") { puzzle(animate = true) }
+                clearHistory()
             }
         }
 
@@ -158,4 +162,9 @@ private fun arrowNavigation(x: Int, y: Int) {
     el("cell-${activeCell.x}-${activeCell.y}").removeClass("active-cell")
     activeCell = puzzle[x, y]
     newCell.addClass("active-cell")
+}
+
+fun clearHistory(){
+    History.clear()
+    el<HTMLButtonElement>("previous").disabled = true
 }
