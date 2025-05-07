@@ -1,3 +1,4 @@
+import kotlin.random.Random
 import kotlin.test.*
 
 //Take another step shouldn't work if no valid step
@@ -157,5 +158,31 @@ class PuzzleTests {
         assertFalse(puzzle.isValid(3, 1, 6))
         assertFalse(puzzle.isValid(8, 8, 0))
         assertFalse(puzzle.isValid(8, 8, 10))
+    }
+
+    @Test
+    fun canBeCompleted() {
+        val goodPuzzle = STARTER_PUZZLE
+        val badPuzzle = importPuzzle(
+            """
+        1,2,3,,,,,,
+        4,5,6,,,,,,
+        ,,,,,,,,
+        ,,,,,,,,
+        ,,,,6,,,,
+"""
+        )
+
+        assertTrue(goodPuzzle.canBeCompleted())
+        assertFalse(badPuzzle.canBeCompleted())
+    }
+
+
+    @Test
+    fun generatePuzzle() {
+        val puzzle = generatePuzzle(Random(0))
+        puzzle.minimalSolvable()
+        assertTrue(puzzle.cells().filter { it.value != null }.size < 50)
+        assertTrue(puzzle.canBeCompleted())
     }
 }

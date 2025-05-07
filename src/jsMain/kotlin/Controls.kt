@@ -9,6 +9,7 @@ import kotlinx.dom.addClass
 import kotlinx.dom.removeClass
 import kotlinx.html.*
 import kotlinx.html.js.onClickFunction
+import minimalSolvable
 import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
@@ -113,8 +114,8 @@ private fun TagConsumer<HTMLElement>.saveControls() {
         button {
             +"Generate"
             onClickFunction = {
-                puzzle = generatePuzzle(Random(Date().getMilliseconds()))
-                replaceElement("puzzle-wrapper") { puzzle(animate = false) }
+                puzzle = generatePuzzle(Random(Date().getMilliseconds())).apply { minimalSolvable() }
+                replaceElement("puzzle-wrapper") { puzzle(animate = true) }
             }
         }
 

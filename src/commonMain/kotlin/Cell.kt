@@ -21,10 +21,10 @@ data class Cell(val x: Int, val y: Int, var value: Int? = null) {
     }
 
     fun hasOnlyOneOption() = possibleValues.size == 1
+
     fun applyUpdate() {
         if (possibleValues.size == 1) {
             value = possibleValues.first()
-            println("Setting $x,$y to $value")
         }
     }
 

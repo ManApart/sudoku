@@ -17,6 +17,20 @@ fun generatePuzzle(rand: Random): Puzzle {
     return puzzle
 }
 
+fun Puzzle.minimalSolvable() {
+    val cells = cells().filter { it.value != null }.shuffled().toMutableList()
+    while (cells.isNotEmpty()) {
+        val cell = cells.removeLast()
+        val before = cell.value
+        cell.reset()
+        clearPossible()
+        if (!canBeCompleted()) {
+            manuallySet(cell.x,cell.y, before)
+            return
+        }
+    }
+}
+
 private fun Puzzle.shuffleNumbers(rand: Random) {
     puzzleWidth.forEach { swapNumbers(it + 1, rand.nextInt(8) + 1) }
 }

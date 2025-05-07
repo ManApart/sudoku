@@ -81,7 +81,7 @@ private fun animate(highlightedCell: Cell?, animate: Boolean) {
         if (animate) {
             puzzle.cells().filter { it.value != null }.forEachIndexed { i, cell ->
                 launch {
-                    delay(100L * i)
+                    delay(20L * i)
                     highlightBox("cell-${cell.x}-${cell.y}")
                     delay(100L)
                     el<HTMLInputElement>("cell-${cell.x}-${cell.y}").value = "" + cell.value

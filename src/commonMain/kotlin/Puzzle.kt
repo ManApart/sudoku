@@ -7,7 +7,7 @@ class Puzzle {
     private val grids = gridWidth.map { y -> gridWidth.map { x -> buildGrid(x * 3, y * 3, cells) }.toTypedArray() }
 
     operator fun get(x: Int, y: Int) = cells[y]!!.let { it[x] }
-    operator fun set(x: Int, y: Int, value: Int) {
+    operator fun set(x: Int, y: Int, value: Int?) {
         cells[y]?.let { it[x].value = value }
     }
 
@@ -34,10 +34,10 @@ class Puzzle {
         clearPossible()
     }
 
-    fun takeStep(): Cell? {
+    fun takeStep(apply: Boolean = true): Cell? {
         updatePossible()
         return (singleOption() ?: mustForRow() ?: mustForCol() ?: mustForGrid())
-            ?.apply { applyUpdate() }
+            ?.apply { if (apply) applyUpdate() }
     }
 
     fun updatePossible() {
@@ -73,7 +73,7 @@ class Puzzle {
         return possible in 1..9 && !rowHas(y, possible, ignoring) && !colHas(x, possible, ignoring) && !containingGrid(x, y).has(possible, ignoring)
     }
 
-    private fun clearPossible() {
+    fun clearPossible() {
         cells().forEach { it.resetPossible() }
     }
 
@@ -84,6 +84,20 @@ class Puzzle {
     fun isComplete() = cells().all { it.value != null }
 
     fun export() = cells.values.map { row -> row.map { it.value } }
+
+    private fun copy() = Puzzle().also { copy ->
+        cells().forEach { c -> copy[c.x, c.y] = c.value}
+    }
+
+    fun canBeCompleted(): Boolean {
+        val puzzle = copy()
+        var next = puzzle.takeStep()
+        while (next != null) {
+            next = puzzle.takeStep()
+        }
+        return puzzle.isComplete()
+    }
+
 }
 
 private fun buildGrid(startX: Int, startY: Int, puzzleCells: Map<Int, Array<Cell>>): Grid {
