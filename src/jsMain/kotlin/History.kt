@@ -36,5 +36,8 @@ object History {
         }.also { historyIndex-- }
     }
 
-    fun clear() = history.clear()
+    fun clear(){
+        history.clear()
+        historyIndex = -1
+    }
 }
