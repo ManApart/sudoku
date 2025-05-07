@@ -14,6 +14,7 @@ import kotlinx.html.*
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.js.onKeyUpFunction
+import org.w3c.dom.HTMLButtonElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.events.KeyboardEvent
@@ -105,20 +106,23 @@ private fun cellChanged(x: Int, y: Int) {
 
 fun cellChanged(x: Int, y: Int, newValue: Int?) {
     val messageBox = el("puzzle-messages")
+    val cellDiv = el<HTMLInputElement>("cell-$x-$y")
     when {
         newValue == null -> {
             messageBox.textContent = "Unable to parse number"
+            cellDiv.value = ""
         }
 
         newValue < 1 || newValue > 9 -> {
             messageBox.textContent = "$newValue out of range"
+            cellDiv.value = ""
         }
 
         else -> {
-            println("Cell $x,$y changed to $newValue")
-            el<HTMLInputElement>("cell-$x-$y").value = "" + newValue
+            cellDiv.value = "" + newValue
             puzzle.manuallySet(x, y, newValue)
             History.add(puzzle[x, y])
+            el<HTMLButtonElement>("previous").disabled = false
             if (puzzle.isValid(x, y, newValue)) highlightBox("cell-$x-$y")
             markInvalid(puzzle)
         }
@@ -134,5 +138,12 @@ private fun highlightBox(element: String) {
 }
 
 fun markInvalid(puzzle: Puzzle) {
-    puzzle.cells().filter { it.value != null && !puzzle.isValid(it.x, it.y, it.value!!) }.forEach { el("cell-${it.x}-${it.y}").addClass("invalid-cell") }
+    puzzle.cells().forEach {
+        val cellDiv = el("cell-${it.x}-${it.y}")
+        if (it.value != null && !puzzle.isValid(it.x, it.y, it.value!!)) {
+            cellDiv.addClass("invalid-cell")
+        } else {
+            cellDiv.removeClass("invalid-cell")
+        }
+    }
 }

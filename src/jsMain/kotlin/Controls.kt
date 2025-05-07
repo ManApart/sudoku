@@ -139,7 +139,6 @@ private fun displayNext(puzzle: Puzzle, changedCell: Cell?) {
     el<HTMLButtonElement>("previous").disabled = false
 }
 
-
 fun arrowNavigation(x: Int, y: Int, key: String) {
     when (key) {
         "ArrowUp" -> arrowNavigation(x, y - 1)
@@ -153,8 +152,9 @@ fun arrowNavigation(x: Int, y: Int, key: String) {
 private fun arrowNavigation(x: Int, y: Int) {
     val newX = min(8, max(0, x))
     val newY = min(8, max(0, y))
-    val newCell = el("cell-$newX-$newY")
+    val newCell = el<HTMLInputElement>("cell-$newX-$newY")
     newCell.focus()
+    newCell.select()
     el("cell-${activeCell.x}-${activeCell.y}").removeClass("active-cell")
     activeCell = puzzle[x, y]
     newCell.addClass("active-cell")
