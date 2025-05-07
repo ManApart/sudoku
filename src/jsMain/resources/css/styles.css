@@ -108,6 +108,11 @@ td input {
     display: none;
 }
 
+.arrow-button {
+    padding: 10px;
+    font-size: larger;
+}
+
 #numpad {
     width: fit-content;
     margin: auto;

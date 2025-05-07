@@ -51,7 +51,7 @@ private fun TagConsumer<HTMLElement>.numpadControls() {
 private fun TagConsumer<HTMLElement>.historyControls() {
     div {
         id = "puzzle-pieces"
-        button {
+        button(classes = "arrow-button") {
             id = "previous"
             +"<"
             disabled = historyIndex < 0
@@ -62,7 +62,7 @@ private fun TagConsumer<HTMLElement>.historyControls() {
                 replaceElement("puzzle-wrapper") { puzzle(previous) }
             }
         }
-        button {
+        button(classes = "arrow-button") {
             id = "next"
             +">"
             disabled = puzzle.isComplete()
